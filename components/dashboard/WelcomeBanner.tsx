@@ -2,14 +2,19 @@
 
 import { Sparkles } from "lucide-react";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 
 export function WelcomeBanner() {
+  const { user } = useAuth();
   return (
-    <div className="relative bg-[#0F4C75] rounded-[3rem] p-8 md:p-12 overflow-hidden min-h-[400px] flex flex-col justify-center">
+    <div className="relative bg-[#0F4C75] rounded-[3rem] p-8 md:p-12 min-h-[400px] z-0 flex flex-col justify-center">
       {/* Content */}
       <div className="relative z-10 max-w-xl">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
-          Hai, User
+          Hai,{" "}
+          {user?.displayName && user.displayName.length > 12
+            ? `${user.displayName.substring(0, 12)}...`
+            : user?.displayName || "User"}
         </h1>
         <p className="text-white/80 text-lg mb-10 max-w-md">
           Mulai kelola dan kembangkan konten usahamu hari ini
@@ -29,12 +34,12 @@ export function WelcomeBanner() {
       </div>
 
       {/* Mascot Image (Right Side) */}
-      <div className="absolute top-10 right-4 md:right-10 md:top-6 lg:right-20 w-[200px] md:w-[300px] lg:w-[350px]">
+      <div className="absolute top-10 z-10 right-4 md:right-10 md:top-6 lg:-top-10 lg:right-0 w-[200px] md:w-[250px] lg:w-[250px]">
         <Image
-          src="/icons/Kepala koxy.svg" // Placeholder, needs full body fox ideally
+          src="/icons/mascot-arsa.svg" // Placeholder, needs full body fox ideally
           alt="Mascot"
-          width={350}
-          height={400}
+          width={250}
+          height={300}
           className="w-full h-auto object-contain drop-shadow-2xl"
         />
       </div>

@@ -36,8 +36,8 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="flex-1 pb-16 md:pb-0 min-h-screen transition-all duration-300 w-full">
-        <div className="max-w-7xl mx-auto p-4 md:p-8">{children}</div>
+      <main className="flex-1 pb-16 md:pb-0 min-h-screen transition-all duration-300 w-full relative">
+        {children}
       </main>
       <BottomNav />
     </div>

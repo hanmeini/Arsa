@@ -6,6 +6,9 @@ import { Database, Wand2, TrendingUp } from "lucide-react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { Introduction } from "@/components/landing/Introduction";
+import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
+import { ImpactSection } from "@/components/landing/ImpactSection";
+import { TestimonialSection } from "@/components/landing/TestimonialSection";
 
 export default function LandingPage() {
   return (
@@ -18,6 +21,15 @@ export default function LandingPage() {
 
       {/* Introduction Section */}
       <Introduction />
+
+      {/* New Features Grid Section */}
+      <FeaturesGrid />
+
+      {/* Impact Section */}
+      <ImpactSection />
+
+      {/* Testimonial Section */}
+      <TestimonialSection />
 
       {/* Features Section */}
       <section id="features" className="py-24 bg-gray-50">
@@ -62,7 +74,7 @@ export default function LandingPage() {
                 <div
                   className={cn(
                     "w-12 h-12 rounded-xl flex items-center justify-center mb-6",
-                    feature.bg
+                    feature.bg,
                   )}
                 >
                   <feature.icon className={cn("w-6 h-6", feature.color)} />
