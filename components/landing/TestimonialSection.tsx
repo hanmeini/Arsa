@@ -178,11 +178,11 @@ export function TestimonialSection() {
           {/* Carousel Scroll Container - Centered Items */}
           <div
             ref={scrollRef}
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide w-full md:w-screen md:ml-[calc(50%-50vw)] relative z-10 h-[450px] items-center"
+            className="flex flex-nowrap gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide w-full md:w-screen md:ml-[calc(50%-50vw)] relative z-10 h-[450px] items-center"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {/* Spacer for Desktop Layout - WIDE to force center start */}
-            <div className="hidden md:block shrink-0 w-[450px] lg:w-[45vw]" />
+            {/* Spacer for Desktop Layout - Fixed Width */}
+            <div className="hidden md:block shrink-0 w-[450px] lg:w-[480px] snap-start" />
 
             {voices.map((voice) => (
               <motion.div
