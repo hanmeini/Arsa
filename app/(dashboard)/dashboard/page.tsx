@@ -10,7 +10,11 @@ import { StatsCards } from "@/components/dashboard/StatsCards";
 import { TemplatesSection } from "@/components/dashboard/TemplatesSection";
 import { TrendChart } from "@/components/dashboard/TrendChart";
 
-export default function DashboardPage() {
+import { generateDashboardData } from "@/lib/gemini";
+
+export default async function DashboardPage() {
+  const data = await generateDashboardData();
+
   return (
     <div className="min-h-screen pb-20 relative isolate bg-gradient-to-b from-[#89C0E0]/30 to-[#FFFFFF]/30">
       {/* Background Dots Pattern */}
@@ -36,19 +40,19 @@ export default function DashboardPage() {
 
           {/* Stats Widget - Spans 1 col */}
           <div className="lg:col-span-1">
-            <StatsCards />
+            <StatsCards stats={data.stats} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Templates Section - Spans 3 cols */}
-          <div className="lg:col-span-3">
-            <TemplatesSection />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Templates Section */}
+          <div className="mb-8 p-6">
+            <TemplatesSection apiKey={process.env.DEAPI_KEY || ""} />
           </div>
 
           {/* Trend Chart - Spans 1 col */}
-          <div className="lg:col-span-1">
-            <TrendChart />
+          <div className="lg:col-span-1 h-full">
+            <TrendChart data={data.trend} />
           </div>
         </div>
       </div>
