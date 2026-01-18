@@ -115,13 +115,13 @@ export function TestimonialSection() {
           {/* Desktop Nav Buttons */}
           <div className="hidden md:flex gap-4 shrink-0">
             <button
-              onClick={() => scroll("left")}
+              onClick={() => scroll("right")} // Reversed
               className="w-12 h-12 flex items-center justify-center rounded-xl border border-gray-300 bg-white text-gray-600 hover:text-[#0F4C75] hover:border-[#0F4C75] transition-all duration-200 shadow-sm"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button
-              onClick={() => scroll("right")}
+              onClick={() => scroll("left")} // Reversed
               className="w-12 h-12 flex items-center justify-center rounded-xl border border-gray-300 bg-white text-gray-600 hover:text-[#0F4C75] hover:border-[#0F4C75] transition-all duration-200 shadow-sm"
             >
               <ChevronRight className="w-6 h-6" />
@@ -233,7 +233,7 @@ export function TestimonialSection() {
         <div className="mt-8 flex items-center justify-between md:justify-center md:pl-[450px]">
           {/* Mobile Prev */}
           <button
-            onClick={() => scroll("left")}
+            onClick={() => scroll("right")} // Reversed
             className="md:hidden w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-[#0F4C75] shadow-sm active:scale-95 transition-transform"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -257,7 +257,7 @@ export function TestimonialSection() {
 
           {/* Mobile Next */}
           <button
-            onClick={() => scroll("right")}
+            onClick={() => scroll("left")} // Reversed
             className="md:hidden w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-[#0F4C75] shadow-sm active:scale-95 transition-transform"
           >
             <ChevronRight className="w-5 h-5" />

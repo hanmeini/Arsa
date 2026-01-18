@@ -25,10 +25,10 @@ export function WelcomeBanner() {
           <input
             type="text"
             placeholder="Ex. buat desain minuman, caption Instagram, bold minimalism"
-            className="flex-1 bg-transparent border-none outline-none text-gray-600 placeholder:text-gray-400 text-sm"
+            className="flex-1 bg-transparent font-medium border-none outline-none text-gray-600 placeholder:text-gray-400 text-sm"
           />
           <button className="bg-[#FF9600] w-10 h-10 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors shrink-0">
-            <Sparkles className="w-5 h-5 text-white" />
+            <Image src="/icons/mage_stars-b.svg" alt="mage_stars" width={20} height={20} className="w-5 h-5 text-white" />
           </button>
         </div>
       </div>
