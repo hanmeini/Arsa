@@ -1,4 +1,10 @@
 import { InventoryTable } from "@/components/features/inventory/InventoryTable";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Inventory",
+  description: "Manage your product stock efficiently",
+};
 
 export default function InventoryPage() {
   return (

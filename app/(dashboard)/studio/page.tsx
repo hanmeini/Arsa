@@ -1,4 +1,10 @@
 import { ContentStudio } from "@/components/features/studio/ContentStudio";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Studio",
+  description: "Create AI-powered product content",
+};
 
 export default function StudioPage() {
   return (

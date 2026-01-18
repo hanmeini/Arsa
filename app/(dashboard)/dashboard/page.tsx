@@ -1,4 +1,10 @@
 import { Header } from "@/components/dashboard/Header";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Overview of your business performance",
+};
 import { WelcomeBanner } from "@/components/dashboard/WelcomeBanner";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { TemplatesSection } from "@/components/dashboard/TemplatesSection";

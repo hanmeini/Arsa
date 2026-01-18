@@ -9,6 +9,8 @@ import {
   Settings,
   LogOut,
   Grid,
+  Package,
+  Wand2,
 } from "lucide-react";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
@@ -16,6 +18,8 @@ import { useRouter } from "next/navigation";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Inventory", href: "/inventory", icon: Package },
+  { name: "Studio", href: "/studio", icon: Wand2 },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
 
@@ -51,13 +55,13 @@ export function Sidebar() {
                 "flex items-center h-12 rounded-xl transition-all duration-300 px-3 gap-4",
                 isActive
                   ? "text-[#FF9600] bg-white/10"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
+                  : "text-white/50 hover:text-white hover:bg-white/5",
               )}
             >
               <Icon
                 className={cn(
                   "w-6 h-6 shrink-0",
-                  isActive && "drop-shadow-[0_0_8px_rgba(255,150,0,0.5)]"
+                  isActive && "drop-shadow-[0_0_8px_rgba(255,150,0,0.5)]",
                 )}
               />
               <span className="font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">

@@ -1,4 +1,10 @@
 import { PredictiveChart } from "@/components/features/dashboard/PredictiveChart";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Analytics",
+  description: "Market trends and sales predictions",
+};
 
 export default function AnalyticsPage() {
   return (
