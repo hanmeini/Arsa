@@ -5,10 +5,13 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isShowcase = pathname === "/showcase";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,7 +26,7 @@ export function Navbar() {
       <nav
         className={cn(
           "fixed top-0 w-full z-50 transition-all duration-300",
-          scrolled
+          scrolled && !isShowcase
             ? "bg-white/90 backdrop-blur-md shadow-sm py-3"
             : "bg-transparent py-5",
         )}
@@ -36,32 +39,70 @@ export function Navbar() {
                 {/* Simple circle logo placeholder from design */}
                 <div className="w-4 h-4 rounded-full bg-white/30" />
               </div>
-              <span className="text-xl font-bold text-gray-900">Arsa</span>
+              <span
+                className={cn(
+                  "text-xl font-bold",
+                  isShowcase ? "text-white" : "text-gray-900",
+                )}
+              >
+                Arsa
+              </span>
             </div>
 
             {/* Centered Navigation (Desktop) */}
             <div className="hidden md:flex items-center space-x-8">
               <Link
                 href="/"
-                className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  isShowcase
+                    ? "text-white/80 hover:text-white"
+                    : "text-gray-600 hover:text-gray-900",
+                )}
               >
                 Beranda
               </Link>
               <Link
                 href="/about"
-                className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  isShowcase
+                    ? "text-white/80 hover:text-white"
+                    : "text-gray-600 hover:text-gray-900",
+                )}
               >
                 Tentang Arsa
               </Link>
               <Link
+                href="/showcase"
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  isShowcase
+                    ? "text-white/80 hover:text-white"
+                    : "text-gray-600 hover:text-gray-900",
+                )}
+              >
+                Showcase
+              </Link>
+              <Link
                 href="/pricing"
-                className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  isShowcase
+                    ? "text-white/80 hover:text-white"
+                    : "text-gray-600 hover:text-gray-900",
+                )}
               >
                 Harga
               </Link>
               <Link
                 href="/contact"
-                className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  isShowcase
+                    ? "text-white/80 hover:text-white"
+                    : "text-gray-600 hover:text-gray-900",
+                )}
               >
                 Kontak
               </Link>
@@ -71,7 +112,12 @@ export function Navbar() {
             <div className="hidden md:flex items-center gap-6">
               <Link
                 href="/register"
-                className="text-gray-900 font-medium text-sm hover:text-gray-600 transition-colors"
+                className={cn(
+                  "font-medium text-sm transition-colors",
+                  isShowcase
+                    ? "text-white hover:text-white/80"
+                    : "text-gray-900 hover:text-gray-600",
+                )}
               >
                 Daftar
               </Link>
@@ -87,7 +133,10 @@ export function Navbar() {
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(true)}
-                className="text-gray-900 p-2"
+                className={cn(
+                  "p-2",
+                  isShowcase ? "text-white" : "text-gray-900",
+                )}
               >
                 <Menu className="w-6 h-6" />
               </button>

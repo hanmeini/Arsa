@@ -104,3 +104,26 @@ export async function generateDashboardData(month: string = "Januari", year: str
     };
   }
 }
+
+export async function getChatResponse(history: { role: "user" | "model"; parts: string }[], message: string) {
+  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+  
+  const chat = model.startChat({
+    history: history.map(msg => ({
+      role: msg.role,
+      parts: [{ text: msg.parts }],
+    })),
+    generationConfig: {
+      maxOutputTokens: 1000,
+    },
+  });
+
+  try {
+    const result = await chat.sendMessage(message);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Gemini Chat Error:", error);
+    throw new Error("Maaf, Arsa sedang sibuk. Coba lagi nanti ya!");
+  }
+}
