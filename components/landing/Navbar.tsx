@@ -25,7 +25,7 @@ export function Navbar() {
           "fixed top-0 w-full z-50 transition-all duration-300",
           scrolled
             ? "bg-white/90 backdrop-blur-md shadow-sm py-3"
-            : "bg-transparent py-5"
+            : "bg-transparent py-5",
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,15 +41,30 @@ export function Navbar() {
 
             {/* Centered Navigation (Desktop) */}
             <div className="hidden md:flex items-center space-x-8">
-              {["Beranda", "Beranda", "Beranda", "Beranda"].map((item, i) => (
-                <Link
-                  key={i}
-                  href="#"
-                  className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
-                >
-                  {item}
-                </Link>
-              ))}
+              <Link
+                href="/"
+                className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+              >
+                Beranda
+              </Link>
+              <Link
+                href="/about"
+                className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+              >
+                Tentang Arsa
+              </Link>
+              <Link
+                href="/pricing"
+                className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+              >
+                Harga
+              </Link>
+              <Link
+                href="/contact"
+                className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+              >
+                Kontak
+              </Link>
             </div>
 
             {/* Right Actions (Desktop) */}
@@ -117,16 +132,34 @@ export function Navbar() {
               </div>
 
               <div className="flex flex-col gap-2 mt-4">
-                {["Beranda", "Beranda", "Beranda", "Beranda"].map((item, i) => (
-                  <Link
-                    key={i}
-                    href="#"
-                    className="text-gray-600 hover:text-gray-900 text-lg font-medium transition-colors py-3 border-b border-gray-50"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {item}
-                  </Link>
-                ))}
+                <Link
+                  href="/"
+                  className="text-gray-600 hover:text-gray-900 text-lg font-medium transition-colors py-3 border-b border-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Beranda
+                </Link>
+                <Link
+                  href="/about"
+                  className="text-gray-600 hover:text-gray-900 text-lg font-medium transition-colors py-3 border-b border-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Tentang Arsa
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="text-gray-600 hover:text-gray-900 text-lg font-medium transition-colors py-3 border-b border-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Harga
+                </Link>
+                <Link
+                  href="/contact"
+                  className="text-gray-600 hover:text-gray-900 text-lg font-medium transition-colors py-3 border-b border-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Kontak
+                </Link>
               </div>
 
               <div className="mt-auto flex flex-col gap-4">

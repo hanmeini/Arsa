@@ -11,6 +11,8 @@ import {
   Grid,
   Package,
   Wand2,
+  History,
+  MessageSquare,
 } from "lucide-react";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
@@ -18,9 +20,10 @@ import { useRouter } from "next/navigation";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Laporan Performa", href: "/analytics", icon: BarChart3 },
   { name: "Inventory", href: "/inventory", icon: Package },
-  { name: "Studio", href: "/studio", icon: Wand2 },
-  { name: "Analytics", href: "/analytics", icon: BarChart3 },
+  { name: "Riwayat Penjualan", href: "/sales-history", icon: History },
+  { name: "Konsultasi", href: "/chat", icon: MessageSquare },
 ];
 
 export function Sidebar() {

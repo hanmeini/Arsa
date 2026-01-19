@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Play, Smile } from "lucide-react";
+import { ChevronLeft, ChevronRight, Smile } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const voices = [
@@ -131,46 +131,45 @@ export function TestimonialSection() {
 
         <div className="relative w-full flex flex-col md:block min-h-[450px]">
           {/* Mobile Featured Image */}
-          <div className="block md:hidden w-full h-[250px] mb-8">
+          <div className="block md:hidden w-full h-[380px] mb-8">
             <div className="relative h-full w-full rounded-3xl overflow-hidden shadow-lg group">
-              <div className="absolute inset-0 bg-[#0F4C75]" />
               <Image
-                src="/icons/bghp.svg"
-                alt="Cover"
-                width={450}
-                height={500}
-                className="w-full h-full object-cover opacity-60 mix-blend-overlay"
+                src="/images/testimonials.png"
+                alt="Testimonial Cover"
+                fill
+                className="object-cover"
               />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-white border border-white/50">
-                  <Play className="w-5 h-5 fill-current" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F4C75] via-[#0F4C75]/60 to-transparent opacity-90" />
+
+              <div className="absolute bottom-0 left-0 p-8 w-full z-10">
+                <div className="mb-4">
+                  <Image src="/icons/ooui_quotes-ltr.svg" alt="Quote" width={56} height={56} />
                 </div>
+                <h3 className="text-white text-2xl md:text-3xl font-bold leading-tight">
+                  Sekarang ngurus usaha jadi lebih jelas arahnya
+                </h3>
               </div>
             </div>
           </div>
 
           {/* Desktop Featured Image (Absolute Left) */}
           <div className="absolute left-0 top-0 bottom-0 w-[400px] lg:w-[450px] z-0 hidden md:block">
-            <div className="relative h-full w-full rounded-3xl overflow-hidden shadow-xl group">
-              {/* Background Placeholder */}
-              <div className="absolute inset-0 bg-[#0F4C75]">
-                <Image
-                  src="/icons/bghp.svg"
-                  alt="Cover"
-                  width={450}
-                  height={500}
-                  className="w-full h-full object-cover opacity-50 mix-blend-overlay"
-                />
-              </div>
+            <div className="relative h-full w-full rounded-3xl overflow-hidden shadow-xl">
+              <Image
+                src="/images/testimonials.png"
+                alt="Testimonial Cover"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F4C75] via-[#0F4C75]/60 to-transparent opacity-90" />
 
-              {/* Play Button */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/40 shadow-lg cursor-pointer transition-transform"
-                >
-                  <Play className="w-6 h-6 fill-current" />
-                </motion.button>
+              <div className="absolute bottom-0 left-0 p-10 w-full z-10">
+                <div className="mb-6">
+                  <Image src="/icons/ooui_quotes-ltr.svg" alt="Quote" width={56} height={56} />
+                </div>
+                <h3 className="text-white text-3xl font-bold leading-snug">
+                  Sekarang ngurus usaha jadi lebih jelas arahnya
+                </h3>
               </div>
             </div>
           </div>

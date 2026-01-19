@@ -18,7 +18,7 @@ const faqItems = [
       "Anda cukup memasukkan kebutuhan usaha, lalu ARSA akan memproses dan menyiapkan solusi yang dapat langsung digunakan.",
   },
   {
-    question: "Bagaimana cara memulai?", // Duplicate question based on image, using different answer or same for now
+    question: "Bagaimana cara mendaftar?", 
     answer:
       "Proses pendaftaran sangat mudah, cukup dengan email dan Anda bisa langsung mencoba fitur gratis kami.",
   },

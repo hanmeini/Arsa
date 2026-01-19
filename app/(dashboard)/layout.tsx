@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -14,6 +14,7 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -33,13 +34,15 @@ export default function DashboardLayout({
     return null; // Will redirect
   }
 
+  const isChatPage = pathname === "/chat";
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
+      {!isChatPage && <Sidebar />}
       <main className="flex-1 pb-16 md:pb-0 min-h-screen transition-all duration-300 w-full relative">
         {children}
       </main>
-      <BottomNav />
+      {!isChatPage && <BottomNav />}
     </div>
   );
 }

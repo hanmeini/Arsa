@@ -48,24 +48,24 @@ export function DesignGeneratorModal({
       // Construct a prompt based on inputs
       const prompt = `Professional product photography of ${productName}, commercial advertisement style, ${style} aesthetic, high quality, photorealistic, 8k`;
       formData.append("prompt", prompt);
-      // DIRECT CLIENT-SIDE CALL (Retry)
-      // Because Server is blocked by Cloudflare 403.
+      // DIRECT CLIENT-SIDE CALL WITH CORS PROXY
+      // Bypasses CORS (Browser) AND Cloudflare (Server) issues.
 
-      console.log(
-        "Attempting Client-Side Generation with Key length:",
-        apiKey?.length,
-      );
+      console.log("Attempting Client-Side Generation via CORS Proxy");
 
-      const response = await fetch(
+      // We use encodeURIComponent to ensure the target URL is passed correctly
+      const targetUrl = encodeURIComponent(
         "https://api.deapi.ai/api/v1/client/img2img",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: formData,
-        },
       );
+      const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
+
+      const response = await fetch(proxyUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: formData,
+      });
 
       if (!response.ok) {
         const errText = await response.text();

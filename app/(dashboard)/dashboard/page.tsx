@@ -46,7 +46,7 @@ export default async function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Templates Section */}
-          <div className="mb-8 p-6">
+          <div className="mb-8 p-6 lg:col-span-2">
             <TemplatesSection apiKey={process.env.DEAPI_KEY || ""} />
           </div>
 

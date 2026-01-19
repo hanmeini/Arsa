@@ -1,89 +1,66 @@
 "use client";
 
-import { useState } from "react";
-import { Edit2, Trash2, AlertCircle } from "lucide-react";
+import { Edit2, Trash2, AlertCircle, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Product } from "@/lib/firebase/inventory";
+import Image from "next/image";
 
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  stock: number;
-  lastUpdated: string;
+interface InventoryTableProps {
+  products: Product[];
+  onEdit: (product: Product) => void;
+  onDelete: (id: string) => void;
 }
 
-// Mock Data
-const initialProducts: Product[] = [
-  {
-    id: "1",
-    name: "Keripik Singkong Balado",
-    category: "Snack",
-    price: 15000,
-    stock: 5,
-    lastUpdated: "2023-10-25",
-  },
-  {
-    id: "2",
-    name: "Kopi Arabika Gayo 200g",
-    category: "Beverage",
-    price: 85000,
-    stock: 24,
-    lastUpdated: "2023-10-24",
-  },
-  {
-    id: "3",
-    name: "Sambal Bawang Botol",
-    category: "Condiment",
-    price: 25000,
-    stock: 45,
-    lastUpdated: "2023-10-26",
-  },
-  {
-    id: "4",
-    name: "Kain Batik Tulis",
-    category: "Fashion",
-    price: 450000,
-    stock: 2,
-    lastUpdated: "2023-10-20",
-  },
-  {
-    id: "5",
-    name: "Madu Hutan Asli",
-    category: "Health",
-    price: 120000,
-    stock: 12,
-    lastUpdated: "2023-10-22",
-  },
-];
-
-export function InventoryTable() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-
+export function InventoryTable({
+  products,
+  onEdit,
+  onDelete,
+}: InventoryTableProps) {
   const getStockStatus = (stock: number) => {
     if (stock <= 5)
-      return { color: "text-red-600 bg-red-50", label: "Low Stock" };
+      return {
+        color: "text-red-700 bg-red-50 border-red-100",
+        label: "Low Stock",
+      };
     if (stock <= 20)
-      return { color: "text-amber-600 bg-amber-50", label: "Medium" };
-    return { color: "text-green-600 bg-green-50", label: "In Stock" };
+      return {
+        color: "text-amber-700 bg-amber-50 border-amber-100",
+        label: "Medium",
+      };
+    return {
+      color: "text-green-700 bg-green-50 border-green-100",
+      label: "In Stock",
+    };
   };
 
+  if (products.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
+        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+          <Package className="w-8 h-8 text-[var(--primary)]" />
+        </div>
+        <h3 className="text-lg font-bold text-gray-900 mb-1">
+          Belum ada produk
+        </h3>
+        <p className="text-gray-500 text-sm">
+          Mulai tambahkan produk untuk mengatur inventaris.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto bg-white rounded-2xl border border-gray-100 shadow-sm">
       <table className="min-w-full text-left text-sm whitespace-nowrap">
-        <thead className="uppercase tracking-wider border-b border-gray-200 bg-gray-50">
+        <thead className="uppercase tracking-wider border-b border-gray-100 bg-gray-50/50">
           <tr>
-            <th className="px-6 py-4 font-semibold text-gray-900">
-              Product Name
-            </th>
-            <th className="px-6 py-4 font-semibold text-gray-900">Category</th>
-            <th className="px-6 py-4 font-semibold text-gray-900">Price</th>
-            <th className="px-6 py-4 font-semibold text-gray-900">
-              Stock Level
-            </th>
-            <th className="px-6 py-4 font-semibold text-gray-900">Status</th>
-            <th className="px-6 py-4 font-semibold text-gray-900 text-right">
-              Actions
+            <th className="px-6 py-4 font-bold text-gray-700">Produk</th>
+            <th className="px-6 py-4 font-bold text-gray-700">Kategori</th>
+            <th className="px-6 py-4 font-bold text-gray-700">Harga</th>
+            <th className="px-6 py-4 font-bold text-gray-700">Stok</th>
+            <th className="px-6 py-4 font-bold text-gray-700">Status</th>
+            <th className="px-6 py-4 font-bold text-gray-700 text-right">
+              Aksi
             </th>
           </tr>
         </thead>
@@ -93,23 +70,45 @@ export function InventoryTable() {
             return (
               <tr
                 key={product.id}
-                className="hover:bg-gray-50 transition-colors"
+                className="hover:bg-blue-50/30 transition-colors group"
               >
-                <td className="px-6 py-4 font-medium text-gray-900">
-                  {product.name}
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                      {product.image ? (
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center w-full h-full text-gray-300">
+                          <Package className="w-5 h-5" />
+                        </div>
+                      )}
+                    </div>
+                    <span className="font-semibold text-gray-900">
+                      {product.name}
+                    </span>
+                  </div>
                 </td>
-                <td className="px-6 py-4 text-gray-500">{product.category}</td>
-                <td className="px-6 py-4 text-gray-500">
+                <td className="px-6 py-4">
+                  <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 text-xs font-medium border border-gray-200">
+                    {product.category}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-gray-600 font-medium">
                   Rp {product.price.toLocaleString("id-ID")}
                 </td>
-                <td className="px-6 py-4 text-gray-900 font-medium">
+                <td className="px-6 py-4 text-gray-900 font-bold">
                   {product.stock}
                 </td>
                 <td className="px-6 py-4">
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
-                      status.color
+                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border",
+                      status.color,
                     )}
                   >
                     {product.stock <= 5 && <AlertCircle className="w-3 h-3" />}
@@ -117,11 +116,19 @@ export function InventoryTable() {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end items-center gap-2">
-                    <button className="p-2 text-gray-400 hover:text-[var(--primary)] hover:bg-indigo-50 rounded-lg transition-colors">
+                  <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => onEdit(product)}
+                      className="p-2 text-gray-400 hover:text-[var(--primary)] hover:bg-blue-50 rounded-lg transition-all"
+                      title="Edit"
+                    >
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                    <button
+                      onClick={() => product.id && onDelete(product.id)}
+                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                      title="Hapus"
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
