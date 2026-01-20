@@ -99,8 +99,8 @@ export default function AboutPage() {
             minWidth: 200.0,
             scale: 1.0,
             scaleMobile: 1.0,
-            color: 0xff623f,
-            backgroundColor: 0x101324,
+            color: 0xffffff,
+            backgroundColor: 0x154885,
             THREE: window.THREE,
           }),
         );
@@ -353,14 +353,14 @@ export default function AboutPage() {
                 top: "80%",
                 left: "40%",
                 delay: 2.5,
-                image: "/images/",
+                image: "/images/kopi kenangan.jpg",
               },
               {
                 id: 9,
                 top: "75%",
                 left: "60%",
                 delay: 0.3,
-                image: "https://placehold.co/100x100/101324/FFFFFF?text=Logo+9",
+                image: "/images/Screen-Shot-2019-11-05-at-12.23.08-1024x962-removebg-preview.png",
               },
               {
                 id: 10,
@@ -368,7 +368,7 @@ export default function AboutPage() {
                 left: "40%",
                 delay: 1.0,
                 image:
-                  "https://placehold.co/100x100/101324/FFFFFF?text=Logo+10",
+                  "/images/roti gembong.png",
               },
               {
                 id: 11,

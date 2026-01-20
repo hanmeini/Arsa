@@ -196,6 +196,13 @@ export function Navbar() {
                   Tentang Arsa
                 </Link>
                 <Link
+                  href="/showcase"
+                  className="text-gray-600 hover:text-gray-900 text-lg font-medium transition-colors py-3 border-b border-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Showcase
+                </Link>
+                <Link
                   href="/pricing"
                   className="text-gray-600 hover:text-gray-900 text-lg font-medium transition-colors py-3 border-b border-gray-50"
                   onClick={() => setMobileMenuOpen(false)}

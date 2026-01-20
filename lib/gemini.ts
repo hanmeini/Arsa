@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY!;
 const genAI = new GoogleGenerativeAI(apiKey);
 
-const MODEL_NAME = "gemini-pro";
+const MODEL_NAME = "gemini-2.5-flash";
 
 export async function generateCaption(prompt: string, imageBase64?: string) {
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
