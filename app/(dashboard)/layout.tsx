@@ -4,8 +4,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { TemplateSidebar } from "@/components/layout/TemplateSidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { Loader2 } from "lucide-react";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export default function DashboardLayout({
   children,
@@ -23,11 +24,7 @@ export default function DashboardLayout({
   }, [user, loading, router]);
 
   if (loading) {
-    return (
-      <div className="h-screen w-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[var(--primary)]" />
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (!user) {
@@ -35,10 +32,12 @@ export default function DashboardLayout({
   }
 
   const isChatPage = pathname === "/chat";
+  const isTemplatePage =
+    pathname.startsWith("/template") || pathname.startsWith("/profile");
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {!isChatPage && <Sidebar />}
+      {!isChatPage && (isTemplatePage ? <TemplateSidebar /> : <Sidebar />)}
       <main className="flex-1 pb-16 md:pb-0 min-h-screen transition-all duration-300 w-full relative">
         {children}
       </main>

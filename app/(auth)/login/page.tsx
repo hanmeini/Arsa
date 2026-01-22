@@ -10,6 +10,7 @@ import { auth } from "@/lib/firebase/config";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import {
   Mail,
   Lock,
@@ -73,9 +74,9 @@ export default function LoginPage() {
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to login");
-    } finally {
-      setLoading(false);
+      setLoading(false); // Only set loading false on error
     }
+    // On success, keep loading true until redirect completes/unmounts
   };
 
   const handleGoogleLogin = async () => {
@@ -88,10 +89,13 @@ export default function LoginPage() {
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to login with Google");
-    } finally {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="min-h-screen flex bg-white overflow-hidden">

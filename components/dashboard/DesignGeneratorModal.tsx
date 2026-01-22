@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload, Loader2, Sparkles, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { generateDesign } from "@/app/actions/generateDesign";
 
 interface DesignGeneratorModalProps {
   isOpen: boolean;
@@ -36,61 +37,23 @@ export function DesignGeneratorModal({
 
   const handleGenerate = async () => {
     if (!file || !productName || !style) return;
-    if (!apiKey) {
-      alert("API Key is missing. Please restart the server to load env vars.");
-      return;
-    }
 
     setIsGenerating(true);
     try {
       const formData = new FormData();
       formData.append("image", file);
-      // Construct a prompt based on inputs
+
+      // Construct prompt
       const prompt = `Professional product photography of ${productName}, commercial advertisement style, ${style} aesthetic, high quality, photorealistic, 8k`;
       formData.append("prompt", prompt);
-      // DIRECT CLIENT-SIDE CALL WITH CORS PROXY
-      // Bypasses CORS (Browser) AND Cloudflare (Server) issues.
 
-      console.log("Attempting Client-Side Generation via CORS Proxy");
+      // Call Server Action
+      const generatedDataUrl = await generateDesign(formData, apiKey);
 
-      // We use encodeURIComponent to ensure the target URL is passed correctly
-      const targetUrl = encodeURIComponent(
-        "https://api.deapi.ai/api/v1/client/img2img",
-      );
-      const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
-
-      const response = await fetch(proxyUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`API Error ${response.status}: ${errText}`);
-      }
-
-      const data = await response.json();
-
-      if (data.error) {
-        alert(`Generation failed: ${data.error}`);
-        return;
-      }
-
-      if (data?.images?.[0]) {
-        // deAPI usually returns 'images' array with URLs or base64
-        setGeneratedImage(data.images[0].url || data.images[0]);
-      } else if (data?.image_url) {
-        setGeneratedImage(data.image_url);
-      } else {
-        console.error("Unexpected API response structure:", data);
-        alert("Failed to parse result. See console for raw data.");
-      }
-    } catch (error) {
+      setGeneratedImage(generatedDataUrl);
+    } catch (error: any) {
       console.error("Generation failed:", error);
-      alert("Something went wrong during generation.");
+      alert(error.message || "Something went wrong during generation.");
     } finally {
       setIsGenerating(false);
     }

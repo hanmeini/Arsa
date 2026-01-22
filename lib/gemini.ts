@@ -70,6 +70,24 @@ export async function generateDashboardData(month: string = "Januari", year: str
     }
   }
 
+  // FORCE DISABLE GEMINI for Dashboard to prevent quota usage
+  // Return fallback data immediately
+  return {
+    stats: {
+      views: "1.245",
+      sales: "156",
+      orders: "56",
+      trend: 12
+    },
+    trend: {
+      year: "2026",
+      description: "Mengikuti perubahan kebutuhan dan selera desain",
+      data: [10, 25, 40, 30, 45, 35, 50, 40, 60, 55, 70, 65, 80]
+    }
+  };
+
+  /* 
+  // Original API Logic disabled
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
   const prompt = `
@@ -139,6 +157,7 @@ export async function generateDashboardData(month: string = "Januari", year: str
       }
     };
   }
+  */
 }
 
 export async function getChatResponse(history: { role: "user" | "model"; parts: string }[], message: string) {
