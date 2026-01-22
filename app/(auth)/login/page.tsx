@@ -98,246 +98,205 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-white overflow-hidden">
-      {/* LEFT SIDE: Mascot & Slogan */}
-      <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center p-12 overflow-hidden bg-white">
-        <div className="relative z-10 max-w-lg text-center">
-          {/* Mascot Image with Animation */}
-          <motion.div
-            key={`mascot-${currentSlide}`}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-80 h-80 mx-auto mb-8 relative"
-          >
-            <Image
-              src={slides[currentSlide].image}
-              alt={`Mascot ${currentSlide + 1}`}
-              fill
-              className="object-contain drop-shadow-2xl"
-            />
-          </motion.div>
-
-          {/* Slider Indicators (Moved between Mascot and Text) */}
-          <div className="flex justify-center gap-2 mb-8 mt-[-20px]">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={cn(
-                  "w-3 h-3 rounded-full transition-all duration-300",
-                  currentSlide === index
-                    ? "bg-[#0F4C75] w-6"
-                    : "bg-gray-200 hover:bg-gray-300",
-                )}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-
-          {/* Title & Description with Animation */}
-          <motion.div
-            key={`text-${currentSlide}`}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-left w-full pl-4"
-          >
-            <h2 className="text-3xl font-bold text-[#0F4C75] mb-4 leading-tight min-h-[80px] flex items-end justify-start">
-              {slides[currentSlide].title}
-            </h2>
-
-            <p className="text-gray-500 text-lg leading-relaxed min-h-[84px]">
-              {slides[currentSlide].description}
-            </p>
-          </motion.div>
+    <div className="min-h-screen flex bg-[#F0F9FF] overflow-hidden font-sans">
+      {/* LEFT SIDE: Brand & Vision */}
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-center px-16 bg-[#005587] text-white overflow-hidden">
+        {/* Decorative Elements */}
+        <Image
+          src="/icons/dekor-login.svg"
+          alt="dekor"
+          width={232}
+          height={143}
+          className="absolute top-0 left-0"
+        />
+        <Image
+          src="/icons/dekor-login.svg"
+          alt="dekor"
+          width={232}
+          height={143}
+          className="absolute bottom-0 right-0 rotate-180"
+        />
+        <Image
+          src="/icons/meteocons_star.svg"
+          alt="star"
+          width={80}
+          height={80}
+          className="absolute right-10 top-10"
+        />
+        <Image
+          src="/icons/stars2.svg"
+          alt="star"
+          width={80}
+          height={80}
+          className="absolute left-20 bottom-10"
+        />
+        <div className="absolute top-10 left-10">
+          <div className="w-20 h-20 border border-dashed border-orange-400/30 rounded-full opacity-50" />
         </div>
-      </div>
-
-      {/* RIGHT SIDE: Form with Curved Background */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center relative">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute bottom-10 right-10">
           <Image
-            src="/images/bglogin.svg"
-            alt="Login Background"
-            fill
-            className="object-cover"
-            priority
+            src="/icons/mage_stars-b.svg"
+            alt="star"
+            width={40}
+            height={40}
+            className="text-orange-400 opacity-80"
           />
         </div>
 
-        {/* Curved Divider (SVG) - Visible only on Desktop to create the wave effect between white and blue (now background image) */}
-        <div className="absolute left-[-1px] top-0 bottom-0 w-[10vw] hidden lg:block overflow-hidden z-20 pointer-events-none">
-          <svg
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            className="h-full w-full fill-white"
-          >
-            <path d="M0,0 C40,30 60,70 0,100 L0,0 Z" />
-          </svg>
-        </div>
+        <div className="relative z-10 max-w-lg">
+          {/* Logo */}
+          <div className="mb-12">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/icons/logo-login.svg"
+                alt="Arsa Logo"
+                width={40}
+                height={40}
+                className="w-12 h-12"
+              />
+            </div>
+          </div>
 
-        {/* Mobile Top Curve (Optional, usually simple for mobile) */}
-        <div className="absolute top-[-1px] left-0 right-0 h-[10vh] lg:hidden w-full fill-[#005096] z-0 bg-white">
-          {/* Mobile specific styling if needed, currently kept clean */}
-        </div>
+          <h1 className="text-5xl font-bold leading-tight mb-6">
+            Asisten cerdas <br />
+            untuk arah usaha
+          </h1>
 
-        <motion.div
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md p-8 relative z-30"
-        >
-          <div className="bg-white rounded-3xl shadow-2xl p-8 lg:p-10">
+          <p className="text-lg text-blue-100/80 leading-relaxed max-w-md">
+            Otomatisasi proses bisnis dan tingkatkan performa toko Anda secara
+            efisien
+          </p>
+
+          {/* Stylized connector lines */}
+          <div className="absolute -bottom-40 -left-20 w-[500px] h-[500px] border border-orange-500/20 rounded-full opacity-30 pointer-events-none" />
+        </div>
+      </div>
+
+      {/* RIGHT SIDE: Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center relative p-6">
+        <div className="w-full max-w-[420px] relative z-10 mx-auto">
+          {/* Mascot Peeking */}
+          <div className="flex justify-center mb-[-30px] relative z-0">
+            <Image
+              src="/icons/icon-login.svg"
+              alt="Arsa Mascot"
+              width={160}
+              height={160}
+              className="object-contain" // Adjust size as needed
+            />
+          </div>
+
+          {/* Card */}
+          <div className="bg-white rounded-[2rem] shadow-xl p-8 md:p-10 relative z-10">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-[#0F4C75] mb-2">
-                Selamat Datang
+              <h2 className="text-xl font-bold text-[#0F4C75] mb-2">
+                Masuk ke Arsa
               </h2>
               <p className="text-gray-400 text-sm">
                 Silahkan masukan akun Anda disini
               </p>
             </div>
 
-            <form className="space-y-6" onSubmit={handleLogin}>
-              <div className="space-y-5">
-                {/* Email Input */}
-                <div className="space-y-1">
-                  <label className="text-sm font-semibold text-[#0F4C75] ml-1">
-                    Email
-                  </label>
-                  <div className="relative group">
-                    <Mail className="absolute left-4 top-3.5 h-5 w-5 text-gray-400 group-focus-within:text-[#FF9600] transition-colors" />
-                    <input
-                      type="email"
-                      required
-                      className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-[#FF9600] focus:ring-2 focus:ring-[#FF9600]/20 outline-none transition-all duration-200 bg-gray-50/50 text-[#0D0E25]"
-                      placeholder="nama@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
+            <form className="space-y-5" onSubmit={handleLogin}>
+              {/* Email Input */}
+              <div className="space-y-1">
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-3.5 h-5 w-5 text-gray-400 group-focus-within:text-[#FF9600] transition-colors" />
+                  <input
+                    type="email"
+                    required
+                    className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#F5F5F5] border-none focus:ring-2 focus:ring-[#FF9600]/20 text-gray-900 placeholder:text-gray-400 text-sm font-medium transition-all"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
+              </div>
 
-                {/* Password Input */}
-                <div className="space-y-1">
-                  <label className="text-sm font-semibold text-[#0F4C75] ml-1">
-                    Kata Sandi
-                  </label>
-                  <div className="relative group">
-                    <Lock className="absolute left-4 top-3.5 h-5 w-5 text-gray-400 group-focus-within:text-[#FF9600] transition-colors" />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      required
-                      className="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:border-[#FF9600] focus:ring-2 focus:ring-[#FF9600]/20 outline-none transition-all duration-200 bg-gray-50/50 text-[#0D0E25]"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 focus:outline-none"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-                  <div className="text-right">
-                    <Link
-                      href="#"
-                      className="text-xs text-[#FF9600] hover:text-[#e68a00] font-medium"
-                    >
-                      Lupa Kata Sandi?
-                    </Link>
-                  </div>
+              {/* Password Input */}
+              <div className="space-y-1">
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-3.5 h-5 w-5 text-gray-400 group-focus-within:text-[#FF9600] transition-colors" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    className="w-full pl-12 pr-12 py-3.5 rounded-xl bg-[#F5F5F5] border-none focus:ring-2 focus:ring-[#FF9600]/20 text-gray-900 placeholder:text-gray-400 text-sm font-medium transition-all"
+                    placeholder="Kata sandi"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
               </div>
 
               {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-3 bg-red-50 border border-red-100 rounded-lg text-red-500 text-sm text-center font-medium"
-                >
+                <div className="p-3 bg-red-50 text-red-500 text-xs rounded-lg text-center font-medium">
                   {error}
-                </motion.div>
+                </div>
               )}
 
               <button
                 type="submit"
                 disabled={loading}
                 className={cn(
-                  "w-full flex items-center justify-center py-3.5 px-4 rounded-xl text-white font-bold text-sm bg-gradient-to-r from-[#FF9600] to-[#FFB74D] hover:from-[#e68a00] hover:to-[#ffa726] transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF9600]",
-                  loading && "opacity-70 cursor-not-allowed transform-none",
+                  "w-full py-3.5 rounded-xl text-white font-bold text-sm bg-[#F7931A] hover:bg-[#E68A00] transition-all shadow-lg shadow-orange-200 focus:ring-4 focus:ring-orange-100",
+                  loading && "opacity-70 cursor-not-allowed",
                 )}
               >
                 {loading ? (
-                  <Loader2 className="animate-spin h-5 w-5" />
+                  <Loader2 className="animate-spin h-5 w-5 mx-auto" />
                 ) : (
                   "Masuk"
                 )}
               </button>
+            </form>
 
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-100" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-gray-400 font-medium">
-                    Atau masuk dengan
-                  </span>
-                </div>
+            <div className="mt-8 text-center space-y-4">
+              <div className="flex items-center justify-center text-xs text-gray-400 uppercase tracking-widest font-semibold gap-2">
+                <span className="w-8 border-t border-gray-200"></span>
+                Hubungkan akun
+                <span className="w-8 border-t border-gray-200"></span>
               </div>
 
               <button
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                className={cn(
-                  "w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-200 rounded-xl bg-white text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 group",
-                  loading && "opacity-70 cursor-not-allowed",
-                )}
+                className="w-auto mx-auto bg-[#FCF6E5] hover:bg-[#F5EBCF] text-[#5F6368] font-bold py-3 px-12 rounded-full transition-colors flex items-center justify-center gap-2"
               >
-                <svg className="h-5 w-5" viewBox="0 0 24 24">
-                  <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4"
-                  />
-                  <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853"
-                  />
-                  <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z"
-                    fill="#FBBC05"
-                  />
-                  <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    fill="#EA4335"
-                  />
-                </svg>
-                <span>Google</span>
+                <Image
+                  src="/icons/material-icon-theme_google.svg"
+                  alt="Google"
+                  width={20}
+                  height={20}
+                  className="w-5 h-5 text-[#EA4335]"
+                />
+                {/* <span className="text-sm">Google</span> - Icon only logic or text? Mock shows icon only or simple button. Let's keep simpler. Mock shows just 'G' icon circle actually, but pill button is better for UX usually. Let's make it an icon circle button if following mockup exactly?
+                  Mockup shows a pill button with 'G' icon inside. */}
               </button>
 
-              <div className="text-center mt-6">
-                <p className="text-sm text-gray-500">
-                  Belum memiliki akun?{" "}
-                  <Link
-                    href="/register"
-                    className="text-[#0F4C75] font-bold hover:text-[#0A3D60] hover:underline"
-                  >
-                    Daftar
-                  </Link>
-                </p>
-              </div>
-            </form>
+              <p className="text-sm text-gray-500 font-medium">
+                Belum mengenal Arsa?{" "}
+                <Link
+                  href="/register"
+                  className="text-[#0F4C75] font-bold hover:underline"
+                >
+                  Buat Akun
+                </Link>
+              </p>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

@@ -33,7 +33,7 @@ export function Introduction() {
         {/* Header */}
         <div className="mb-16">
           <div className="mb-2">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+            <h2 className="text-4xl md:text-5xl font-bold font-sans text-gray-900 leading-tight">
               <Image
                 src="/icons/mdi_hand-wave.svg"
                 alt="Wave Icon"

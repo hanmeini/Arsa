@@ -113,7 +113,7 @@ export default function AboutPage() {
   }, [threeLoaded, vantaGlobeLoaded, vantaDotsLoaded, vantaNetLoaded]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white font-sans">
       <Navbar />
 
       {/* Load Scripts sequentially */}
@@ -332,7 +332,8 @@ export default function AboutPage() {
                 top: "60%",
                 left: "15%",
                 delay: 1.5,
-                image: "/images/es-teh-nusantara-logo-png_seeklogo-438137-removebg-preview.png",
+                image:
+                  "/images/es-teh-nusantara-logo-png_seeklogo-438137-removebg-preview.png",
               },
               {
                 id: 6,
@@ -346,7 +347,8 @@ export default function AboutPage() {
                 top: "25%",
                 left: "50%",
                 delay: 1.8,
-                image: "/images/Screen-Shot-2019-11-05-at-12.23.08-1024x962-removebg-preview.png",
+                image:
+                  "/images/Screen-Shot-2019-11-05-at-12.23.08-1024x962-removebg-preview.png",
               },
               {
                 id: 8,
@@ -360,15 +362,15 @@ export default function AboutPage() {
                 top: "75%",
                 left: "60%",
                 delay: 0.3,
-                image: "/images/Screen-Shot-2019-11-05-at-12.23.08-1024x962-removebg-preview.png",
+                image:
+                  "/images/Screen-Shot-2019-11-05-at-12.23.08-1024x962-removebg-preview.png",
               },
               {
                 id: 10,
                 top: "10%",
                 left: "40%",
                 delay: 1.0,
-                image:
-                  "/images/roti gembong.png",
+                image: "/images/roti gembong.png",
               },
               {
                 id: 11,

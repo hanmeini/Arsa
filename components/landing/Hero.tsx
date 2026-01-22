@@ -54,7 +54,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 tracking-tight leading-[1.1] mb-6"
+          className="text-4xl md:text-6xl lg:text-7xl font-bold font-sans text-gray-900 tracking-tight leading-[1.1] mb-6"
         >
           Arsa, asisten{" "}
           <span className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-transparent">
@@ -74,7 +74,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-lg md:text-xl font-medium text-[#000000]/80 max-w-2xl mx-auto mb-10"
+          className="text-lg md:text-xl font-medium font-sans text-[#000000]/80 max-w-2xl mx-auto mb-10"
         >
           Solusi modern untuk kebutuhan usaha Anda
         </motion.p>
@@ -88,7 +88,7 @@ export function Hero() {
         >
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 bg-[var(--accent)] text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-amber-600 transition-all hover:scale-105"
+            className="inline-flex items-center gap-2 bg-[var(--accent)] font-sans text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-amber-600 transition-all hover:scale-105"
           >
             Coba Gratis <ChevronRight className="w-5 h-5" />
           </Link>
@@ -146,7 +146,7 @@ export function Hero() {
                 />
               </div>
               <div>
-                <h3 className="font-bold text-left text-gray-900 text-lg">
+                <h3 className="font-bold font-sans text-left text-gray-900 text-lg">
                   Penjualan
                 </h3>
                 <div className="flex items-center gap-1 text-sky-600 text-sm font-medium">
@@ -166,7 +166,7 @@ export function Hero() {
             <div className="bg-white p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] w-[380px]">
               <div className="flex items-center gap-3 mb-1">
                 <TrendingUp className="w-5 h-5 text-orange-500" />
-                <span className="font-bold text-gray-900 text-lg">
+                <span className="font-bold font-sans text-gray-900 text-lg">
                   Trend Desain
                 </span>
               </div>

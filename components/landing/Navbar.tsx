@@ -32,7 +32,7 @@ export function Navbar() {
     <>
       <nav
         className={cn(
-          "fixed top-0 w-full transition-all duration-300",
+          "fixed top-0 w-full transition-all duration-300 font-sans",
           isShowcase ? "z-100" : "z-50",
           scrolled && !isShowcase
             ? "bg-white/90 backdrop-blur-md shadow-sm py-3"
