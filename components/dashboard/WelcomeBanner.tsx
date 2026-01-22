@@ -28,13 +28,19 @@ export function WelcomeBanner() {
             className="flex-1 bg-transparent font-medium border-none outline-none text-gray-600 placeholder:text-gray-400 text-sm"
           />
           <button className="bg-[#FF9600] w-10 h-10 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors shrink-0">
-            <Image src="/icons/mage_stars-b.svg" alt="mage_stars" width={20} height={20} className="w-5 h-5 text-white" />
+            <Image
+              src="/icons/mage_stars-b.svg"
+              alt="mage_stars"
+              width={20}
+              height={20}
+              className="w-5 h-5 text-white"
+            />
           </button>
         </div>
       </div>
 
       {/* Mascot Image (Right Side) */}
-      <div className="absolute top-10 z-10 right-4 md:right-10 md:top-6 lg:-top-10 lg:right-0 w-[200px] md:w-[250px] lg:w-[250px]">
+      <div className="absolute z-10 top-4 right-4 w-[80px] md:top-6 md:right-10 md:w-[250px] lg:-top-10 lg:right-0">
         <Image
           src="/icons/mascot-arsa.svg" // Placeholder, needs full body fox ideally
           alt="Mascot"

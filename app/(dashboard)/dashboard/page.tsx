@@ -9,6 +9,7 @@ import { WelcomeBanner } from "@/components/dashboard/WelcomeBanner";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { TemplatesSection } from "@/components/dashboard/TemplatesSection";
 import { TrendChart } from "@/components/dashboard/TrendChart";
+import { OnboardingModal } from "@/components/dashboard/OnboardingModal";
 
 import { generateDashboardData } from "@/lib/gemini";
 
@@ -56,6 +57,7 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+      <OnboardingModal />
     </div>
   );
 }

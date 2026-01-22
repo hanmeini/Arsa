@@ -95,7 +95,7 @@ export function Hero() {
         </motion.div>
 
         {/* Phone Mockup Area */}
-        <div className="relative max-w-[350px] md:max-w-[1200px] mx-auto min-h-[400px] md:min-h-[600px] flex justify-center items-end mt-0 md:mt-10">
+        <div className="relative w-full max-w-[1200px] mx-auto min-h-[400px] md:min-h-[600px] flex justify-center items-end mt-0 md:mt-10">
           {/* Background Layer for Phone */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -117,13 +117,13 @@ export function Hero() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
-            className="relative z-20 w-[350px] md:w-[600px] lg:w-[850px]"
+            className="relative z-20 w-full max-w-[450px] md:max-w-none md:w-[650px] lg:w-[950px]"
           >
             <Image
-              src="/icons/hp.svg"
+              src="/icons/phone.svg"
               alt="Phone Mockup"
-              width={850}
-              height={1700}
+              width={1200}
+              height={2000}
               className="w-full h-auto drop-shadow-2xl"
               priority
             />
@@ -190,21 +190,11 @@ export function Hero() {
               </div>
             </div>
           </motion.div>
-
-          {/* Floating Card: Empty (Bottom Right) */}
-          <motion.div
-            className="absolute right-4 md:right-20 bottom-10 z-30 hidden md:block" // Adjusted bottom to not overlap too much if aligned bottom
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 1.2, duration: 0.6 }}
-          >
-            <div className="bg-white w-[260px] h-[160px] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)]"></div>
-          </motion.div>
-
-          {/* Gradient Overlay at Bottom */}
-          <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/80 to-transparent z-40 pointer-events-none"></div>
         </div>
       </div>
+
+      {/* Gradient Overlay at Bottom - Moved to section level for full width */}
+      <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/80 to-transparent z-40 pointer-events-none"></div>
     </section>
   );
 }

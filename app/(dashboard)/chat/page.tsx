@@ -24,6 +24,7 @@ import {
 import { getChatResponse } from "@/lib/gemini";
 import ReactMarkdown from "react-markdown";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const suggestions = [
   "Bagaimana cara meningkatkan penjualan online?",
@@ -183,7 +184,10 @@ export default function ChatPage() {
         </div>
 
         <div className="p-4 border-t border-gray-100">
-          <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-gray-200">
+          <Link
+            href="/pricing"
+            className="flex items-center gap-3 p-2 rounded-xl hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-gray-200"
+          >
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white shadow-sm">
               Pro
             </div>
@@ -191,7 +195,7 @@ export default function ChatPage() {
               <p className="text-sm font-bold text-gray-800">Upgrade to Plus</p>
               <p className="text-xs text-gray-500">Get better insights</p>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
 
@@ -295,7 +299,11 @@ export default function ChatPage() {
                   </div>
 
                   <div className="p-4 border-t border-gray-100">
-                    <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-gray-200">
+                    <Link
+                      href="/pricing"
+                      onClick={() => setShowMobileSidebar(false)}
+                      className="flex items-center gap-3 p-2 rounded-xl hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-gray-200"
+                    >
                       <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white shadow-sm">
                         Pro
                       </div>
@@ -307,7 +315,7 @@ export default function ChatPage() {
                           Get better insights
                         </p>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 </div>
               </>

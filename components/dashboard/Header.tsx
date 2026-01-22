@@ -9,7 +9,6 @@ import { auth } from "@/lib/firebase/config";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
-
 export function Header() {
   const { user } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -19,7 +18,10 @@ export function Header() {
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     }
@@ -52,8 +54,8 @@ export function Header() {
         </div>
 
         {/* User Profile */}
-        <div className="relative" ref={dropdownRef}>
-          <button 
+        <div className="relative self-end md:self-auto" ref={dropdownRef}>
+          <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center gap-4 bg-white p-2 pr-4 rounded-full shadow-sm ml-auto md:ml-0 hover:bg-gray-50 transition-colors"
           >
@@ -74,9 +76,13 @@ export function Header() {
               <p className="text-sm font-bold text-gray-900 leading-none">
                 {user?.displayName || "User"}
               </p>
-              <p className="text-xs text-gray-400 truncate max-w-[150px]">{user?.email}</p>
+              <p className="text-xs text-gray-400 truncate max-w-[150px]">
+                {user?.email}
+              </p>
             </div>
-            <div className={`w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
+            <div
+              className={`w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+            >
               <ChevronDown className="w-3 h-3 text-white" />
             </div>
           </button>
@@ -91,7 +97,8 @@ export function Header() {
                 className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-20"
               >
                 <div className="p-2">
-                  <button onClick={() => router.push('/profile')}
+                  <button
+                    onClick={() => router.push("/profile")}
                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                   >
                     <UserRound className="w-4 h-4" />
@@ -116,17 +123,20 @@ export function Header() {
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-bold text-gray-900">Konfirmasi Keluar</h3>
-                  <button 
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Konfirmasi Keluar
+                  </h3>
+                  <button
                     onClick={() => setIsLogoutModalOpen(false)}
                     className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                
+
                 <p className="text-gray-600 mb-8">
-                  Apakah Anda yakin ingin keluar dari akun ini? Anda harus masuk kembali untuk mengakses dashboard.
+                  Apakah Anda yakin ingin keluar dari akun ini? Anda harus masuk
+                  kembali untuk mengakses dashboard.
                 </p>
 
                 <div className="flex gap-3 justify-end">
