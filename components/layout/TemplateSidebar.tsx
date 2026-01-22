@@ -17,8 +17,6 @@ const navItems = [
   { name: "Template 1", href: "/template/1", icon: LooksOneIcon },
   { name: "Template 2", href: "/template/2", icon: LooksTwoIcon },
   { name: "Template 3", href: "/template/3", icon: Looks3Icon },
-  // Other Menus
-  { name: "Data Diri Sosmed", href: "/profile", icon: User },
   { name: "History Generate", href: "/history", icon: History },
 ];
 

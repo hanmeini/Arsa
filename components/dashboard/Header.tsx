@@ -1,19 +1,21 @@
 "use client";
 
-import { Search, ChevronDown, Bell, LogOut, X } from "lucide-react";
+import { Search, ChevronDown, Bell, LogOut, X, UserRound } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+
 
 export function Header() {
   const { user } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -89,15 +91,11 @@ export function Header() {
                 className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-20"
               >
                 <div className="p-2">
-                  <button
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      setIsLogoutModalOpen(true);
-                    }}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  <button onClick={() => router.push('/profile')}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                   >
-                    <LogOut className="w-4 h-4" />
-                    Keluar
+                    <UserRound className="w-4 h-4" />
+                    Profil
                   </button>
                 </div>
               </motion.div>
