@@ -36,7 +36,7 @@ const companies = [
   },
   {
     name: "Sabana",
-    logo: "/images/du ayam.png",
+    logo: "/images/du anyam.png",
   },
   {
     name: "Teh Poci",

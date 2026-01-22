@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { CustomCursor } from "@/components/ui/CustomCursor";
+import { SmoothScroll } from "@/components/ui/SmoothScroll";
 
 const guton = localFont({
   src: [
@@ -44,34 +46,41 @@ export const metadata: Metadata = {
     template: "%s | Arsa",
   },
   description:
-    "Platform all-in-one untuk UMKM: Kelola inventory otomatis, buat konten pemasaran dengan AI, dan pantau tren pasar real-time. Tingkatkan bisnis Anda bersama Arsa.",
+    "Solusi all-in-one untuk UMKM Indonesia: Manajemen inventory otomatis, konten marketing berbasis AI, dan analisis pasar real-time. Mulai digitalisasi bisnis Anda bersama Arsa.",
   keywords: [
-    "UMKM",
-    "Aplikasi Bisnis",
-    "Manajemen Stok",
-    "Inventory",
+    "UMKM Indonesia",
+    "Aplikasi Bisnis AI",
+    "Manajemen Stok Otomatis",
+    "Inventory Management",
+    "Smart Business Assistant",
     "AI Content Generator",
-    "Analisis Tren",
+    "Analisis Tren Pasar",
     "Digitalisasi UMKM",
     "Arsa Platform",
+    "Generative AI untuk Bisnis",
   ],
   authors: [{ name: "Arsa Team" }],
   creator: "Arsa Team",
   publisher: "Arsa Platform",
+  icons: {
+    icon: "/icons/logo-login.svg",
+    shortcut: "/icons/logo-login.svg",
+    apple: "/icons/logo-login.svg",
+  },
   openGraph: {
     type: "website",
     locale: "id_ID",
     url: "https://arsa.id",
     title: "Arsa - Platform Digital Cerdas untuk UMKM",
     description:
-      "Kelola inventory otomatis, buat konten pemasaran dengan AI, dan pantau tren pasar real-time.",
+      "Transformasi bisnis UMKM Anda dengan teknologi AI. Kelola stok, buat konten promosi, dan pantau kompetitor dalam satu aplikasi.",
     siteName: "Arsa Platform",
     images: [
       {
-        url: "/og-image.jpg", // Assuming we might have one or placeholder
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Arsa Platform Dashboard",
+        alt: "Dashboard Arsa Platform",
       },
     ],
   },
@@ -79,12 +88,20 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Arsa - Platform Digital Cerdas untuk UMKM",
     description:
-      "Kelola inventory otomatis, buat konten pemasaran dengan AI, dan pantau tren pasar real-time.",
+      "Transformasi bisnis UMKM Anda dengan teknologi AI. Kelola stok, buat konten promosi, dan pantau kompetitor dalam satu aplikasi.",
     creator: "@arsa_id",
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -98,6 +115,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${guton.variable} antialiased`}>
+        <CustomCursor />
+        <SmoothScroll />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
