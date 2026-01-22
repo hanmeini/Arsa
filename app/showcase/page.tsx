@@ -184,7 +184,7 @@ export default function ShowcasePage() {
 
           {/* Text 2 */}
           <div ref={addToRefs} className="absolute text-center px-4 opacity-0">
-            <h1 className="text-6xl md:text-9xl font-black bg-gradient-to-b from-gray-400 via-gray-300 to-white text-transparent bg-clip-text drop-shadow-2xl origin-center">
+            <h1 className="text-4xl md:text-7xl font-semibold text-white tracking-tight drop-shadow-lg">
               Esensi dari <br />
               Cokelat Murni
             </h1>

@@ -17,6 +17,7 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -38,11 +39,17 @@ export function Sidebar() {
   return (
     <div className="hidden md:flex flex-col w-20 hover:w-64 bg-[#0F4C75] border-r border-[#00446b] h-screen sticky top-0 z-30 shadow-xl transition-all duration-300 group overflow-hidden shrink-0">
       <div className="flex items-center h-20 px-5 gap-4">
-        <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg shrink-0">
-          <Grid className="text-white w-6 h-6" />
+        <div className="w-10 h-10 bg-[#FF9600] rounded-xl flex items-center justify-center shadow-lg shrink-0">
+          <Image
+            src="/icons/logo-arsa.svg"
+            alt="Arsa Logo"
+            width={24}
+            height={24}
+            className="w-6 h-6"
+          />
         </div>
-        <span className="font-bold text-white text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          Arsa
+        <span className="font-bold text-white text-xl font-sans opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+          arsa
         </span>
       </div>
 

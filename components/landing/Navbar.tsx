@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -42,18 +43,13 @@ export function Navbar() {
           <div className="flex justify-between items-center">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center">
-                {/* Simple circle logo placeholder from design */}
-                <div className="w-4 h-4 rounded-full bg-white/30" />
-              </div>
-              <span
-                className={cn(
-                  "text-xl font-bold",
-                  isShowcase ? "text-white" : "text-gray-900",
-                )}
-              >
-                Arsa
-              </span>
+              <Image
+                src="/icons/logo.svg"
+                alt="Arsa Logo"
+                width={120}
+                height={40}
+                className="h-10 w-auto"
+              />
             </div>
 
             {/* Centered Navigation (Desktop) */}
@@ -176,12 +172,13 @@ export function Navbar() {
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center">
-                        <div className="w-4 h-4 rounded-full bg-white/30" />
-                      </div>
-                      <span className="text-xl font-bold text-gray-900">
-                        Arsa
-                      </span>
+                      <Image
+                        src="/icons/logo.svg"
+                        alt="Arsa Logo"
+                        width={120}
+                        height={40}
+                        className="h-10 w-auto"
+                      />
                     </div>
                     <button
                       onClick={() => setMobileMenuOpen(false)}

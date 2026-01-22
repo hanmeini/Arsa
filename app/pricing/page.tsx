@@ -140,15 +140,6 @@ export default function PricingPage() {
 
       {/* Toggle Year Switch */}
       <section className="pb-10 relative z-10">
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center gap-3 bg-white border border-gray-100 p-1 rounded-full shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-            <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200">
-              <span className="translate-x-6 inline-block h-4 w-4 transform rounded-full bg-white transition shadow-sm" />
-            </div>
-            <span className="text-sm font-bold text-[#0D0E25]">1 Tahun</span>
-          </div>
-        </div>
-
         {/* Pricing Cards */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

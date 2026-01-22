@@ -93,12 +93,12 @@ export function TemplateSidebar() {
           <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white shadow-sm group-hover:scale-110 transition-transform">
             Pro
           </div>
-          <div className="flex-1">
+          <Link href='/pricing' className="flex-1">
             <p className="text-sm font-bold text-gray-900 group-hover:text-[#FF9600] transition-colors">
               Upgrade to Plus
             </p>
             <p className="text-xs text-gray-500">Get better insights</p>
-          </div>
+          </Link>
         </div>
       </div>
     </div>
