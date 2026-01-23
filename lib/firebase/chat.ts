@@ -11,6 +11,7 @@ import {
   serverTimestamp,
   getDocs,
   limit,
+  deleteDoc,
 } from "firebase/firestore";
 
 export interface Message {
@@ -105,4 +106,13 @@ export const subscribeToMessages = (chatId: string, callback: (messages: Message
     })) as Message[];
     callback(messages);
   });
+};
+export const deleteChat = async (chatId: string) => {
+  try {
+    const chatRef = doc(db, CHATS_COLLECTION, chatId);
+    await deleteDoc(chatRef);
+  } catch (error) {
+    console.error("Error deleting chat:", error);
+    throw error;
+  }
 };

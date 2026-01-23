@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Menu,
   X,
+  Trash,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -18,6 +19,7 @@ import {
   sendMessage,
   subscribeToChats,
   subscribeToMessages,
+  deleteChat,
   ChatSession,
   Message,
 } from "@/lib/firebase/chat";
@@ -43,6 +45,10 @@ export default function ChatPage() {
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Delete Modal State
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -143,6 +149,20 @@ export default function ChatPage() {
     setInput("");
   };
 
+  const handleDeleteChat = async () => {
+    if (!chatToDelete) return;
+    try {
+      await deleteChat(chatToDelete);
+      if (activeChatId === chatToDelete) {
+        startNewChat();
+      }
+      setShowDeleteModal(false);
+      setChatToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete chat:", error);
+    }
+  };
+
   return (
     <div className="flex h-[calc(100vh-64px)] md:h-screen bg-white overflow-hidden">
       {/* Sidebar History */}
@@ -177,26 +197,40 @@ export default function ChatPage() {
               </p>
             ) : (
               chats.map((chat) => (
-                <button
-                  key={chat.id}
-                  onClick={() => setActiveChatId(chat.id)}
-                  className={cn(
-                    "w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-3 group text-sm",
-                    activeChatId === chat.id
-                      ? "bg-white shadow-sm border border-gray-100 text-[#FF9600] font-medium"
-                      : "text-gray-600 hover:bg-gray-100",
-                  )}
-                >
-                  <MessageSquare
+                <div key={chat.id} className="relative group">
+                  <button
+                    onClick={() => setActiveChatId(chat.id)}
                     className={cn(
-                      "w-4 h-4",
+                      "w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-3 text-sm pr-8",
                       activeChatId === chat.id
-                        ? "text-[#FF9600]"
-                        : "text-gray-400 group-hover:text-[#FF9600]",
+                        ? "bg-white shadow-sm border border-gray-100 text-[#FF9600] font-medium"
+                        : "text-gray-600 hover:bg-gray-100",
                     )}
-                  />
-                  <span className="truncate flex-1">{chat.title}</span>
-                </button>
+                  >
+                    <MessageSquare
+                      className={cn(
+                        "w-4 h-4 shrink-0",
+                        activeChatId === chat.id
+                          ? "text-[#FF9600]"
+                          : "text-gray-400 group-hover:text-[#FF9600]",
+                      )}
+                    />
+                    <span className="truncate flex-1">{chat.title}</span>
+                  </button>
+
+                  {/* Direct Delete Button on Hover */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setChatToDelete(chat.id);
+                      setShowDeleteModal(true);
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                    title="Hapus Percakapan"
+                  >
+                    <Trash className="w-4 h-4" />
+                  </button>
+                </div>
               ))
             )}
           </div>
@@ -287,31 +321,45 @@ export default function ChatPage() {
                         </p>
                       ) : (
                         chats.map((chat) => (
-                          <button
-                            key={chat.id}
-                            onClick={() => {
-                              setActiveChatId(chat.id);
-                              setShowMobileSidebar(false);
-                            }}
-                            className={cn(
-                              "w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-3 group text-sm",
-                              activeChatId === chat.id
-                                ? "bg-white shadow-sm border border-gray-100 text-[#FF9600] font-medium"
-                                : "text-gray-600 hover:bg-gray-100",
-                            )}
-                          >
-                            <MessageSquare
+                          <div key={chat.id} className="relative group">
+                            <button
+                              onClick={() => {
+                                setActiveChatId(chat.id);
+                                setShowMobileSidebar(false);
+                              }}
                               className={cn(
-                                "w-4 h-4",
+                                "w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-3 text-sm pr-8",
                                 activeChatId === chat.id
-                                  ? "text-[#FF9600]"
-                                  : "text-gray-400 group-hover:text-[#FF9600]",
+                                  ? "bg-white shadow-sm border border-gray-100 text-[#FF9600] font-medium"
+                                  : "text-gray-600 hover:bg-gray-100",
                               )}
-                            />
-                            <span className="truncate flex-1">
-                              {chat.title}
-                            </span>
-                          </button>
+                            >
+                              <MessageSquare
+                                className={cn(
+                                  "w-4 h-4 shrink-0",
+                                  activeChatId === chat.id
+                                    ? "text-[#FF9600]"
+                                    : "text-gray-400 group-hover:text-[#FF9600]",
+                                )}
+                              />
+                              <span className="truncate flex-1">
+                                {chat.title}
+                              </span>
+                            </button>
+
+                            {/* Direct Delete Button on Hover */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setChatToDelete(chat.id);
+                                setShowDeleteModal(true);
+                              }}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                              title="Hapus Percakapan"
+                            >
+                              <Trash className="w-4 h-4" />
+                            </button>
+                          </div>
                         ))
                       )}
                     </div>
@@ -352,9 +400,10 @@ export default function ChatPage() {
               <div
                 key={idx}
                 className={cn(
-                  "flex w-full mb-6 gap-3",
+                  "flex w-full mb-6 gap-3 animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards",
                   msg.role === "user" ? "justify-end" : "justify-start",
                 )}
+                style={{ animationDelay: `${idx * 50}ms` }}
               >
                 {/* Arsa Avatar (Left) */}
                 {msg.role === "model" && (
@@ -372,7 +421,7 @@ export default function ChatPage() {
 
                 <div
                   className={cn(
-                    "max-w-[80%] md:max-w-[70%] p-4 rounded-2xl text-sm md:text-base leading-relaxed shadow-sm",
+                    "max-w-[80%] md:max-w-[70%] p-4 rounded-2xl text-sm md:text-base leading-relaxed shadow-sm transform transition-all hover:scale-[1.01]",
                     msg.role === "user"
                       ? "bg-[#FF9600] text-white rounded-br-none"
                       : "bg-white border border-gray-100 text-gray-800 rounded-bl-none",
@@ -404,7 +453,7 @@ export default function ChatPage() {
               </div>
             ))}
             {loadingResponse && (
-              <div className="flex w-full justify-start gap-3">
+              <div className="flex w-full justify-start gap-3 animate-in fade-in duration-500">
                 <div className="w-12 h-12 flex shrink-0 items-center justify-center -ml-2 -mt-2">
                   <video
                     src="/animations/mascot-arsa.mp4"
@@ -454,7 +503,8 @@ export default function ChatPage() {
                 <button
                   key={index}
                   onClick={() => handleSend(suggestion)}
-                  className="p-4 text-left bg-white border border-gray-100 rounded-2xl hover:border-[#FF9600] hover:shadow-md transition-all text-gray-600 text-sm md:text-base group"
+                  className="p-4 text-left bg-white border border-gray-100 rounded-2xl hover:border-[#FF9600] hover:shadow-md transition-all text-gray-600 text-sm md:text-base group animate-in slide-in-from-bottom-4 fade-in duration-500"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <span className="group-hover:text-[#FF9600] transition-colors">
                     {suggestion}
@@ -499,6 +549,42 @@ export default function ChatPage() {
           </p>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal &&
+        mounted &&
+        createPortal(
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+              onClick={() => setShowDeleteModal(false)}
+            />
+            <div className="bg-white rounded-2xl p-6 w-full max-w-sm relative z-50 shadow-2xl animate-in zoom-in-95 duration-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                Hapus Percakapan?
+              </h3>
+              <p className="text-gray-500 mb-6 text-sm">
+                Percakapan ini akan dihapus permanen dan tidak bisa
+                dikembalikan.
+              </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl text-sm font-medium transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleDeleteChat}
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-colors shadow-sm"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
