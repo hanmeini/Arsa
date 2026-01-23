@@ -84,9 +84,9 @@ export default function ChatPage() {
     setInput(""); // Clear input immediately
     setLoadingResponse(true);
 
-    try {
-      let chatId = activeChatId;
+    let chatId = activeChatId;
 
+    try {
       // Create new chat if none active
       if (!chatId) {
         const title =
@@ -113,6 +113,25 @@ export default function ChatPage() {
       await sendMessage(chatId!, "model", reply);
     } catch (error) {
       console.error("Chat failed:", error);
+
+      // Fallback: Provide helpful tips when offline/busy
+      const fallbackResponses = [
+        "Halo, Arsa di sini! Koneksi internet sepertinya sedang lambat, tapi saya punya ide: coba gabungkan produk terlaris Anda dalam satu paket bundling untuk meningkatkan omzet hari ini.",
+        "Hai, Partner! Arsa lagi agak susah terhubung, nih. Sambil menunggu, coba cek stok gudang sebentar yuk, biar nggak ada barang yang menumpuk atau malah kosong.",
+        "Arsa menyapa! Sepertinya sinyal lagi kurang bersahabat. Tapi ingat, pelanggan setia itu emas lho. Jangan lupa sapa mereka hari ini ya!",
+        "Halo! Arsa di sini. Sambil nunggu koneksi lancar, gimana kalau kita pikirkan konten 'behind-the-scene' untuk sosial media? Biasanya audiens suka banget lihat dapur bisnis kita.",
+        "Hai, Arsa hadir! Maaf ya ada gangguan dikit. Oiya, jangan lupa cek arus kas hari ini. Cash flow yang sehat itu napasnya bisnis kita.",
+        "Arsa siap bantu! Tapi sinyal lagi putus-nyambung nih. Ide kilat: bikin flash sale dadakan untuk produk yang lagi banyak stoknya, pasti seru!",
+        "Halo Partner! Arsa disini. Sambil nunggu, coba review ulang kerjaan tim. Siapa tahu ada proses yang bisa dipersingkat biar makin efisien.",
+      ];
+
+      const randomFallback =
+        fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+
+      // Send fallback message so user sees a response
+      if (chatId && user) {
+        await sendMessage(chatId, "model", randomFallback);
+      }
     } finally {
       setLoadingResponse(false);
     }
@@ -188,7 +207,7 @@ export default function ChatPage() {
             href="/pricing"
             className="flex items-center gap-3 p-2 rounded-xl hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-gray-200"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-linear-to-tr from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white shadow-sm">
               Pro
             </div>
             <div className="flex-1">
@@ -216,10 +235,10 @@ export default function ChatPage() {
                 {/* Backdrop */}
                 <div
                   onClick={() => setShowMobileSidebar(false)}
-                  className="md:hidden fixed inset-0 bg-black/30 z-[100] backdrop-blur-sm"
+                  className="md:hidden fixed inset-0 bg-black/30 z-100 backdrop-blur-sm"
                 />
                 {/* Drawer */}
-                <div className="md:hidden fixed top-0 left-0 h-screen w-80 bg-[#f8f9fa] z-[110] shadow-2xl flex flex-col transform transition-transform duration-300">
+                <div className="md:hidden fixed top-0 left-0 h-screen w-80 bg-[#f8f9fa] z-110 shadow-2xl flex flex-col transform transition-transform duration-300">
                   <div className="p-4 border-b border-gray-100 flex justify-between items-center">
                     <h2 className="text-lg font-bold text-gray-800">
                       Histori Chat
@@ -304,7 +323,7 @@ export default function ChatPage() {
                       onClick={() => setShowMobileSidebar(false)}
                       className="flex items-center gap-3 p-2 rounded-xl hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-gray-200"
                     >
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white shadow-sm">
+                      <div className="w-8 h-8 rounded-full bg-linear-to-tr from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white shadow-sm">
                         Pro
                       </div>
                       <div className="flex-1">
@@ -333,16 +352,30 @@ export default function ChatPage() {
               <div
                 key={idx}
                 className={cn(
-                  "flex w-full mb-4",
+                  "flex w-full mb-6 gap-3",
                   msg.role === "user" ? "justify-end" : "justify-start",
                 )}
               >
+                {/* Arsa Avatar (Left) */}
+                {msg.role === "model" && (
+                  <div className="w-12 h-12 flex shrink-0 items-center justify-center -ml-2 -mt-2">
+                    <video
+                      src="/animations/mascot-arsa.mp4"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-contain scale-150"
+                    />
+                  </div>
+                )}
+
                 <div
                   className={cn(
-                    "max-w-[80%] md:max-w-[70%] p-4 rounded-2xl text-sm md:text-base leading-relaxed",
+                    "max-w-[80%] md:max-w-[70%] p-4 rounded-2xl text-sm md:text-base leading-relaxed shadow-sm",
                     msg.role === "user"
                       ? "bg-[#FF9600] text-white rounded-br-none"
-                      : "bg-gray-100 text-gray-800 rounded-bl-none",
+                      : "bg-white border border-gray-100 text-gray-800 rounded-bl-none",
                   )}
                 >
                   {msg.role === "model" ? (
@@ -353,11 +386,36 @@ export default function ChatPage() {
                     msg.content
                   )}
                 </div>
+
+                {/* User Avatar (Right) */}
+                {msg.role === "user" && (
+                  <div className="w-8 h-8 rounded-full bg-gray-200 flex shrink-0 items-center justify-center text-gray-500 font-bold text-xs ring-2 ring-white shadow-sm overflow-hidden mt-1">
+                    {user?.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt="User"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span>{user?.displayName?.[0] || "U"}</span>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
             {loadingResponse && (
-              <div className="flex w-full justify-start animate-pulse">
-                <div className="bg-gray-100 p-4 rounded-2xl rounded-bl-none flex items-center gap-2 text-gray-500 text-sm">
+              <div className="flex w-full justify-start gap-3">
+                <div className="w-12 h-12 flex shrink-0 items-center justify-center -ml-2 -mt-2">
+                  <video
+                    src="/animations/mascot-arsa.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-contain scale-150"
+                  />
+                </div>
+                <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-bl-none flex items-center gap-2 text-gray-500 text-sm shadow-sm">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Arsa sedang mengetik...</span>
                 </div>
