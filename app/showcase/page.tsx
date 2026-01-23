@@ -314,7 +314,7 @@ export default function ShowcasePage() {
         </div>
       </section>
 
-      <div className="bg-white pb-24">
+      <div className="bg-white">
         <Footer />
       </div>
     </main>
