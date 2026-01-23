@@ -16,6 +16,18 @@ export const CustomCursor = () => {
       pathname,
     ) && !pathname.startsWith("/showcase");
 
+  // Mobile check
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const springConfig = { damping: 25, stiffness: 700 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
@@ -51,7 +63,7 @@ export const CustomCursor = () => {
   }, [cursorX, cursorY]);
 
   // If we are on a dashboard page, use the Figma-style cursor
-  if (isDashboard) {
+  if (isDashboard && !isMobile) {
     return (
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-9999"
@@ -77,6 +89,8 @@ export const CustomCursor = () => {
       </motion.div>
     );
   }
+
+  if (isMobile) return null;
 
   // Default Landing Page Cursor (Dot + Ring)
   return (
