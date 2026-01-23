@@ -7,16 +7,16 @@ import {
   LayoutDashboard,
   Package,
   MessageSquare,
-  BarChart3,
-  History,
+  LineChart,
+  Wand2,
 } from "lucide-react";
 
 const navItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Insight", href: "/analytics", icon: LineChart },
+  { name: "Chat", href: "/chat", icon: MessageSquare },
+  { name: "Studio", href: "/content-studio", icon: Wand2 },
   { name: "Inventory", href: "/inventory", icon: Package },
-  { name: "Chat", href: "/chat", icon: MessageSquare, special: true },
-  { name: "Analytics", href: "/analytics", icon: BarChart3 },
-  { name: "Riwayat", href: "/sales-history", icon: History },
 ];
 
 export function BottomNav() {
@@ -37,13 +37,13 @@ export function BottomNav() {
                 "relative flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 group",
                 isActive
                   ? "bg-[#FF9600] text-white shadow-lg shadow-orange-500/30 scale-105"
-                  : "hover:bg-gray-100 text-gray-500 hover:text-gray-900"
+                  : "hover:bg-gray-100 text-gray-500 hover:text-gray-900",
               )}
             >
               <Icon
                 className={cn(
                   "w-5 h-5 transition-transform duration-300",
-                  isActive ? "scale-110" : "group-hover:scale-110"
+                  isActive ? "scale-110" : "group-hover:scale-110",
                 )}
               />
               {isActive && (

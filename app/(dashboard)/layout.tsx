@@ -3,8 +3,6 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { TemplateSidebar } from "@/components/layout/TemplateSidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
@@ -34,7 +32,7 @@ export default function DashboardLayout({
   const isChatPage = pathname === "/chat";
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 overflow-hidden">
+    <div className="flex flex-col h-screen w-screen bg-gray-50 overflow-hidden relative">
       <main className="flex-1 w-full h-full relative overflow-hidden">
         {children}
       </main>
