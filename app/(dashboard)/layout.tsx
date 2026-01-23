@@ -32,16 +32,13 @@ export default function DashboardLayout({
   }
 
   const isChatPage = pathname === "/chat";
-  const isTemplatePage =
-    pathname.startsWith("/template") || pathname.startsWith("/history");
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {!isChatPage && (isTemplatePage ? <TemplateSidebar /> : <Sidebar />)}
-      <main className="flex-1 pb-16 md:pb-0 min-h-screen transition-all duration-300 w-full relative">
+    <div className="flex flex-col min-h-screen bg-gray-50 overflow-hidden">
+      <main className="flex-1 w-full h-full relative overflow-hidden">
         {children}
       </main>
-      {!isChatPage && <BottomNav />}
+      <BottomNav />
     </div>
   );
 }

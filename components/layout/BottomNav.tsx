@@ -23,51 +23,34 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0F4C75] border-t border-[#00446b] z-30 pb-safe shadow-lg">
-      <div className="flex justify-around items-center h-20 px-2">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+      <div className="flex items-center gap-2 px-2 py-2 bg-white/90 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl ring-1 ring-black/5">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
 
-          // Special center button (Chat) - with circular design but in normal flow
-          if (item.special) {
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="flex flex-col items-center justify-center flex-1 -mt-3"
-              >
-                <div
-                  className={cn(
-                    "w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300",
-                    isActive
-                      ? "bg-[#FF9600] scale-110"
-                      : "bg-[#FF9600] hover:scale-105",
-                  )}
-                >
-                  <Icon className="h-6 w-6 text-white" />
-                </div>
-              </Link>
-            );
-          }
-
-          // Regular buttons
           return (
             <Link
               key={item.name}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center space-y-1 transition-colors duration-200 flex-1",
-                isActive ? "text-[#FF9600]" : "text-white/50 hover:text-white",
+                "relative flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 group",
+                isActive
+                  ? "bg-[#FF9600] text-white shadow-lg shadow-orange-500/30 scale-105"
+                  : "hover:bg-gray-100 text-gray-500 hover:text-gray-900"
               )}
             >
               <Icon
                 className={cn(
-                  "h-5 w-5",
-                  isActive && "drop-shadow-[0_0_8px_rgba(255,150,0,0.5)]",
+                  "w-5 h-5 transition-transform duration-300",
+                  isActive ? "scale-110" : "group-hover:scale-110"
                 )}
               />
-              <span className="text-[10px] font-medium">{item.name}</span>
+              {isActive && (
+                <span className="absolute -top-10 px-2 py-1 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 animate-in fade-in slide-in-from-bottom-2 duration-200 whitespace-nowrap pointer-events-none">
+                  {item.name}
+                </span>
+              )}
             </Link>
           );
         })}
