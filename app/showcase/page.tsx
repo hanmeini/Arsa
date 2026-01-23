@@ -40,26 +40,16 @@ export default function ShowcasePage() {
         },
       });
 
-      // Check for mobile
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-
-      // 1. Video Behavior
-      if (!isMobile) {
-        // Desktop: Scrubbing (Link video time to scroll)
-        tl.to(
-          video,
-          {
-            currentTime: video.duration || 10,
-            ease: "none",
-            duration: 10, // Sync with text timeline
-          },
-          0,
-        );
-      } else {
-        // Mobile: Autoplay loop (Smooth performance, no scrubbing cost)
-        video.loop = true;
-        video.play().catch(() => {});
-      }
+      // 1. Video Behavior (Scrubbing for all devices)
+      tl.to(
+        video,
+        {
+          currentTime: video.duration || 10,
+          ease: "none",
+          duration: 10, // Sync with text timeline
+        },
+        0,
+      );
 
       // 2. Text Animations (Sequenced - Centered)
       const texts = textsRef.current;
@@ -165,7 +155,7 @@ export default function ShowcasePage() {
       >
         <video
           ref={videoRef}
-          src="/animations/Chocolate_Drink_Product_Video_scrub.mp4"
+          src="https://res.cloudinary.com/dzp6gu46f/video/upload/v1769152622/Chocolate_Drink_Product_Video_scrub_mzgc16.mp4"
           playsInline
           muted
           className="w-full h-full object-cover will-change-transform"
