@@ -40,16 +40,26 @@ export default function ShowcasePage() {
         },
       });
 
-      // 1. Video Behavior (Scrubbing for all devices)
-      tl.to(
-        video,
-        {
-          currentTime: video.duration || 10,
-          ease: "none",
-          duration: 10, // Sync with text timeline
-        },
-        0,
-      );
+      // Check for mobile
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+      // 1. Video Behavior
+      if (!isMobile) {
+        // Desktop: Scrubbing (Link video time to scroll)
+        tl.to(
+          video,
+          {
+            currentTime: video.duration || 10,
+            ease: "none",
+            duration: 10, // Sync with text timeline
+          },
+          0,
+        );
+      } else {
+        // Mobile: Autoplay loop (Smooth performance, no scrubbing cost)
+        video.loop = true;
+        video.play().catch(() => {});
+      }
 
       // 2. Text Animations (Sequenced - Centered)
       const texts = textsRef.current;
