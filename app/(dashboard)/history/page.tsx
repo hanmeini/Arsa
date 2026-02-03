@@ -46,19 +46,19 @@ const dummyDesigns: GeneratedDesign[] = [
 ];
 
 export default function HistoryPage() {
-  const [designs, setDesigns] = useState<GeneratedDesign[]>(dummyDesigns); // Initialize with dummy data
-  const [loading, setLoading] = useState(false); // Set loading to false initially
+  const [designs, setDesigns] = useState<GeneratedDesign[]>([]);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      // Commented out to use dummy data
-      // if (currentUser) {
-      //   fetchHistory(currentUser.uid);
-      // } else {
-      //   setLoading(false);
-      // }
+      if (currentUser) {
+        fetchHistory(currentUser.uid);
+      } else {
+        setLoading(false);
+        setDesigns([]);
+      }
     });
 
     return () => unsubscribe();
@@ -68,7 +68,7 @@ export default function HistoryPage() {
     try {
       setLoading(true);
       const q = query(
-        collection(db, "generated_designs"),
+        collection(db, "history"),
         where("userId", "==", userId),
         orderBy("createdAt", "desc"),
       );

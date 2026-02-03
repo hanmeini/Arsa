@@ -19,55 +19,83 @@ import Image from "next/image";
 import Link from "next/link";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { generateDesign } from "@/app/actions/generateDesign";
+import { db, auth } from "@/lib/firebase/config";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 // Mock Data for "Case Studies" / Recipes
 const TEMPLATE_DATA: Record<string, any> = {
   "1": {
-    // Jus Semangka
-    title: "Jus Semangka Segar",
+    // Fresh & Natural
+    title: "Fresh & Natural Style",
     description:
-      "Tampilkan kesegaran produk minuman dengan latar belakang natural dan pencahayaan cerah.",
+      "Gaya fotografi dengan elemen alam (daun, air, kayu) dan pencahayaan matahari alami. Cocok untuk menampilkan kesegaran.",
     prompt:
-      "Professional product photography of watermelon juice bottle, surrounded by fresh watermelon slices, water splashes, bright natural lighting, high resolution, 8k, advertising style",
-    exampleImage: "/images/jus-semangka.png",
+      "Professional product photography of ${productName}, surrounded by natural elements like leaves, water splashes, wood textures, bright natural sunlight, organic composition, high resolution, 8k, advertising style",
+    exampleImage: "/images/jus-semangka.png", // Keep example for now or change if user has better generic one
     steps: [
-      "Upload foto botol produk Anda yang memiliki background polos atau transparan.",
-      "Masukkan nama produk 'Jus Semangka' pada kolom input.",
-      "Pilih style 'Organic & Natural' untuk hasil terbaik.",
-      "Klik generate dan tunggu AI menyulap foto Anda.",
+      "Upload foto produk Anda (background transparan lebih baik).",
+      "Masukkan nama produk.",
+      "Jelaskan nuansa alam yang diinginkan (misal: di atas batu sungai, ada percikan air).",
+      "AI akan menyatukan produk Anda dengan alam.",
     ],
     recommendedStyle: "organic nature",
+    inputLabel: "Nuansa Alam / Elemen Pendukung",
+    inputPlaceholder:
+      "Contoh: Di atas meja kayu estetik, ada daun mint segar, pencahayaan pagi hari...",
   },
   "2": {
-    // Body Care
-    title: "Body Care Premium",
+    // Luxury & Elegant
+    title: "Luxury & Elegant Style",
     description:
-      "Tonjolkan sisi elegan dan mewah dari produk perawatan tubuh Anda.",
+      "Gaya mewah dengan nuansa emas, marble, atau warna gelap elegan. Menggunakan podium dan pencahayaan studio dramatis.",
     prompt:
-      "Luxury skincare bottle product photography, podium stand, beige and gold color palette, soft studio lighting, elegant shadows, minimalist composition, 4k",
+      "Luxury product photography of ${productName} on a podium stand, elegant marble or gold textures, soft dramatic studio lighting, rich shadows, premium composition, 4k",
     exampleImage: "/images/bodycare.png",
     steps: [
-      "Siapkan foto produk skincare dengan pencahayaan yang cukup.",
-      "Input nama produk dan deskripsi singkat.",
-      "Gunakan style 'Luxury & Elegant'.",
-      "AI akan menambahkan elemen podium dan pencahayaan studio.",
+      "Siapkan foto produk.",
+      "Input nama produk.",
+      "Deskripsikan suasana mewah yang diinginkan.",
+      "AI akan membuat produk Anda terlihat premium dan mahal.",
     ],
     recommendedStyle: "luxury elegant",
+    inputLabel: "Nuansa Mewah / Atmosfer",
+    inputPlaceholder:
+      "Contoh: Di atas podium marmer putih, aksen emas, pencahayaan soft dari samping...",
   },
   "3": {
-    // Hair Care
-    title: "Hair Care Professional",
-    description: "Visualisasikan hasil perawatan rambut profesional.",
+    // Minimalist Studio
+    title: "Minimalist Studio Style",
+    description:
+      "Gaya bersih, modern, dan simple. Latar belakang polos atau geometri sederhana untuk fokus penuh pada produk.",
     prompt:
-      "Professional hair care product bottle, salon background with bokeh, soft backlight, sleek and modern design, commercial photography, high detail",
+      "Minimalist product photography of ${productName}, clean abstract background, geometric shapes, soft backlight, sleek and modern design, commercial photography, high detail",
     exampleImage: "/images/haircare.png",
     steps: [
-      "Pastikan foto produk terlihat jelas labelnya.",
-      "Ketik jenis produk (misal: Shampoo, Conditioner).",
-      "Pilih style 'Minimalist Studio' atau 'Magazine Editorial'.",
-      "Dapatkan hasil foto katalog profesional instan.",
+      "Pastikan foto produk terlihat jelas.",
+      "Ketik jenis produk.",
+      "Jelaskan warna tema atau bentuk geometri yang diinginkan.",
+      "Dapatkan hasil foto katalog profesional yang bersih.",
     ],
     recommendedStyle: "minimalist",
+    inputLabel: "Warna Tema / Komposisi",
+    inputPlaceholder:
+      "Contoh: Background warna pastel lembut, ada bayangan estetik, komposisi simetris...",
+  },
+  custom: {
+    // Custom Design
+    title: "Custom Design",
+    description:
+      "Buat desain unik Anda sendiri dengan kontrol penuh atas style dan prompt.",
+    prompt: "Custom design based on user input...",
+    exampleImage: "/animations/mascot-thinking.mp4",
+    steps: [
+      "Upload foto produk Anda.",
+      "Tentukan kategori, nama produk, dan deskripsi detail.",
+      "Pilih style yang diinginkan atau biarkan AI berkreasi.",
+      "Klik Simpan untuk generate hasil unik Anda.",
+    ],
+    recommendedStyle: "",
   },
 };
 
@@ -93,6 +121,90 @@ export function TemplateGenerator({
   const [description, setDescription] = useState("");
   const [style, setStyle] = useState(data.recommendedStyle || ""); // Pre-fill style
   const [isGenerating, setIsGenerating] = useState(false);
+  /* Download Handler */
+  const handleDownload = async () => {
+    if (!generatedImage) return;
+
+    try {
+      const response = await fetch(generatedImage);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `arsa-design-${productName.replace(/\s+/g, "-").toLowerCase()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
+      // Fallback for direct link if fetch fails (e.g. CORS)
+      const link = document.createElement("a");
+      link.href = generatedImage;
+      link.target = "_blank";
+      link.download = "design.png";
+      link.click();
+    }
+  };
+
+  /* Cloudinary Upload */
+  const uploadToCloudinary = async (base64Image: string) => {
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      throw new Error("Cloudinary config missing");
+    }
+
+    const formData = new FormData();
+    formData.append("file", base64Image);
+    formData.append("upload_preset", uploadPreset);
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || "Cloudinary upload failed");
+    }
+
+    const data = await response.json();
+    return data.secure_url;
+  };
+
+  const saveToHistory = async (imageUrl: string, promptUsed: string) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      console.log("Uploading to Cloudinary...");
+      // 1. Upload to Cloudinary
+      const cloudinaryUrl = await uploadToCloudinary(imageUrl);
+      console.log("Uploaded!", cloudinaryUrl);
+
+      // 2. Save metadata to Firestore
+      await addDoc(collection(db, "history"), {
+        userId: user.uid,
+        imageUrl: cloudinaryUrl, // Save the Cloudinary URL
+        prompt: promptUsed,
+        templateId: currentId,
+        templateTitle: data.title,
+        productName: productName,
+        category: category,
+        style: currentId === "custom" ? style : data.recommendedStyle,
+        createdAt: serverTimestamp(),
+      });
+      console.log("Saved to history!");
+    } catch (error) {
+      console.error("Failed to save history:", error);
+    }
+  };
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,16 +257,25 @@ export function TemplateGenerator({
       return;
     }
 
-    if (
-      !file ||
-      !productName ||
-      !style ||
-      !category ||
-      !price ||
-      !description
-    ) {
-      alert("Mohon lengkapi semua data dalam formulir");
-      return;
+    if (currentId === "custom") {
+      if (
+        !file ||
+        !productName ||
+        !style ||
+        !category ||
+        !price ||
+        !description
+      ) {
+        alert("Mohon lengkapi semua data dalam formulir custom");
+        return;
+      }
+    } else {
+      // For templates, strict check might be looser depending on what's hidden
+      // But assuming hidden state holds values, we need to ensure minimal required logic
+      if (!file || !productName || !description) {
+        alert("Mohon lengkapi data produk");
+        return;
+      }
     }
 
     setIsGenerating(true);
@@ -162,24 +283,39 @@ export function TemplateGenerator({
     setShowSuccessModal(false);
 
     try {
-      // Simulate network request
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Simulate network request (Removed simulation for real request)
+      // await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Use the specific template result image
-      setGeneratedImage(`/images/template${currentId}.png`);
-      setShowSuccessModal(true); // Trigger modal
+      // setGeneratedImage(`/images/template${currentId}.png`);
+      // setShowSuccessModal(true); // Trigger modal
 
-      /*
-      // SERVER ACTION DISABLED
+      // SERVER ACTION ENABLED
       const formData = new FormData();
       formData.append("image", file);
-      
-      const prompt = `Professional product photography of ${productName} (${category}), ${description}. Style: ${style}. Commercial advertisement style, high quality, photorealistic, 8k.`;
+
+      const layoutPrompt =
+        currentId === "1"
+          ? `Professional product photography of ${productName} (${category}). Style: Fresh & Natural. ${description}. Surrounded by natural elements like leaves, water, sunlight. Organic composition, 8k.`
+          : currentId === "2"
+            ? `Luxury product photography of ${productName} (${category}). Style: Luxury & Elegant. ${description}. On a podium, marble/gold textures, dramatic lighting. Premium look, 8k.`
+            : currentId === "3"
+              ? `Minimalist product photography of ${productName} (${category}). Style: Minimalist Studio. ${description}. Clean background, geometric shapes, soft lighting. Modern look, 8k.`
+              : `Create a professional product advertisement for "${productName}" (${category}). 
+      Description: ${description}.
+      Target Style: ${style}.
+      Instructions: Keep the product (bottle/packaging) exactly as is, but completely replace the background and lighting to match the '${style}' aesthetic. High quality, photorealistic, 8k resolution, commercial photography.`;
+
+      const prompt = layoutPrompt;
       formData.append("prompt", prompt);
 
-      const result = await generateDesign(formData, apiKey);
-      setGeneratedImage(result);
-      */
+      // Pass the API key explicitly if needed, or rely on server-side env
+      const generatedImageBase64 = await generateDesign(formData, apiKey);
+      setGeneratedImage(generatedImageBase64);
+
+      // Auto-save to history
+      saveToHistory(generatedImageBase64, prompt);
+      setShowSuccessModal(true);
     } catch (error: any) {
       console.error("Generation failed:", error);
       alert(error.message || "Something went wrong during generation.");
@@ -213,6 +349,12 @@ export function TemplateGenerator({
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               {data.title}
             </h1>
+            {currentId !== "custom" && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-[#0F4C75] text-xs font-bold uppercase tracking-wider mb-3 border border-blue-100 mt-2">
+                <Sparkles className="w-3 h-3" />
+                Style: {data.recommendedStyle}
+              </div>
+            )}
             <p className="text-gray-500 text-lg max-w-2xl">
               {data.description}
             </p>
@@ -258,16 +400,29 @@ export function TemplateGenerator({
               <span className="text-xs font-medium uppercase mt-1">Output</span>
             </div>
 
-            <div className="relative aspect-square w-full max-w-[280px] bg-gray-100 rounded-2xl overflow-hidden mx-auto shadow-md rotate-3 hover:rotate-0 transition-transform duration-500">
-              <Image
-                src={data.exampleImage}
-                alt="Example Result"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent flex items-end p-4">
-                <span className="text-white text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded">
-                  Hasil AI
+            <div className="relative aspect-square w-full max-w-[280px] bg-white rounded-2xl overflow-hidden mx-auto rotate-3 hover:rotate-0 transition-transform duration-500">
+              {data.exampleImage.endsWith(".mp4") ? (
+                <video
+                  src={data.exampleImage}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <Image
+                  src={data.exampleImage}
+                  alt="Example Result"
+                  fill
+                  className="object-cover"
+                />
+              )}
+              <div className="absolute inset-0 bg-linear-to-t flex items-end p-4">
+                <span className="text-white text-xs font-bold px-2 py-1 rounded">
+                  {data.exampleImage.endsWith(".mp4")
+                    ? "Image Preview"
+                    : "Hasil AI"}
                 </span>
               </div>
             </div>
@@ -333,57 +488,63 @@ export function TemplateGenerator({
           <div className="space-y-6">
             {/* Row 1: Style & Category */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 block">
-                  Gaya Konten
-                </label>
-                <div className="relative">
-                  <select
-                    value={style}
-                    onChange={(e) => setStyle(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:border-[#FF9600] focus:ring-4 focus:ring-[#FF9600]/10 transition-all outline-none appearance-none cursor-pointer font-medium text-gray-700 text-sm"
-                  >
-                    <option value="" disabled>
-                      Pilih gaya konten
-                    </option>
-                    <option value="minimalist">Minimalist Studio</option>
-                    <option value="vibrant pop art">Vibrant Pop Art</option>
-                    <option value="luxury elegant">Luxury & Elegant</option>
-                    <option value="organic nature">Organic & Natural</option>
-                    <option value="magazine editorial">
-                      Magazine Editorial
-                    </option>
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+              {/* STYLE: Only show if Custom */}
+              {currentId === "custom" && (
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 block">
+                    Gaya Konten
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={style}
+                      onChange={(e) => setStyle(e.target.value)}
+                      className="w-full px-4 py-3.5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:border-[#FF9600] focus:ring-4 focus:ring-[#FF9600]/10 transition-all outline-none appearance-none cursor-pointer font-medium text-gray-700 text-sm"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                      <option value="" disabled>
+                        Pilih gaya konten
+                      </option>
+                      <option value="minimalist">Minimalist Studio</option>
+                      <option value="vibrant pop art">Vibrant Pop Art</option>
+                      <option value="luxury elegant">Luxury & Elegant</option>
+                      <option value="organic nature">Organic & Natural</option>
+                      <option value="magazine editorial">
+                        Magazine Editorial
+                      </option>
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 block">
-                  Kategori
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3.5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:border-[#FF9600] focus:ring-4 focus:ring-[#FF9600]/10 transition-all outline-none font-medium text-gray-700 text-sm placeholder:text-gray-400"
-                  placeholder="Kategori Produk"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                />
-              </div>
+              {/* CATEGORY: Only show if Custom */}
+              {currentId === "custom" && (
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 block">
+                    Kategori
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-3.5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:border-[#FF9600] focus:ring-4 focus:ring-[#FF9600]/10 transition-all outline-none font-medium text-gray-700 text-sm placeholder:text-gray-400"
+                    placeholder="Kategori Produk"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Row 2: Name & Price */}
@@ -400,18 +561,21 @@ export function TemplateGenerator({
                   onChange={(e) => setProductName(e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 block">
-                  Harga
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3.5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:border-[#FF9600] focus:ring-4 focus:ring-[#FF9600]/10 transition-all outline-none font-medium text-gray-700 text-sm placeholder:text-gray-400"
-                  placeholder="Tentukan harga"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                />
-              </div>
+              {/* PRICE: Only show if Custom */}
+              {currentId === "custom" && (
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 block">
+                    Harga
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-3.5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:border-[#FF9600] focus:ring-4 focus:ring-[#FF9600]/10 transition-all outline-none font-medium text-gray-700 text-sm placeholder:text-gray-400"
+                    placeholder="Tentukan harga"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Row 3: Photo */}
@@ -471,11 +635,18 @@ export function TemplateGenerator({
             {/* Row 4: Description */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700 block">
-                Deskripsi
+                {currentId === "custom"
+                  ? "Deskripsi"
+                  : data.inputLabel || "Deskripsi Detail"}
               </label>
               <textarea
                 className="w-full h-32 px-4 py-3.5 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:border-[#FF9600] focus:ring-4 focus:ring-[#FF9600]/10 transition-all outline-none font-medium text-gray-700 text-sm placeholder:text-gray-400 resize-none"
-                placeholder="Jelaskan detail produk anda..."
+                placeholder={
+                  currentId === "custom"
+                    ? "Jelaskan detail produk anda..."
+                    : data.inputPlaceholder ||
+                      "Jelaskan detail visual yang diinginkan..."
+                }
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -615,7 +786,7 @@ export function TemplateGenerator({
             </div>
 
             {/* Bottom Action */}
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex justify-center gap-4">
               <button
                 disabled={!generatedImage}
                 onClick={handleUpload}
@@ -625,6 +796,15 @@ export function TemplateGenerator({
                 <span className="text-xs group-hover:translate-x-1 transition-transform">
                   &gt;
                 </span>
+              </button>
+
+              <button
+                disabled={!generatedImage}
+                onClick={handleDownload}
+                className="px-6 py-3 rounded-full bg-gray-100 text-gray-600 font-semibold text-sm hover:bg-gray-200 transition-all flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download
               </button>
             </div>
           </div>

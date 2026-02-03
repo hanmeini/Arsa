@@ -6,7 +6,7 @@ const https = require("https");
 async function main() {
   try {
     // 1. Get API Key
-    const envPath = path.join(__dirname, ".env.local");
+    const envPath = path.join(__dirname, ".env");
     const envContent = fs.readFileSync(envPath, "utf8");
     const match = envContent.match(/NEXT_PUBLIC_GEMINI_API_KEY=(.*)/);
     const apiKey = match ? match[1].trim().replace(/['"]/g, "") : null;
@@ -17,7 +17,7 @@ async function main() {
     }
     console.log(
       "✅ Found API Key (starts with):",
-      apiKey.substring(0, 4) + "..."
+      apiKey.substring(0, 4) + "...",
     );
 
     // 2. Try to use the SDK to generate content with the problematic model
@@ -65,11 +65,11 @@ async function main() {
               console.error("❌ API Error listing models:", json.error);
             } else if (json.models) {
               console.log("✅ Available Models:");
-              json.models.forEach((m) => {
-                if (m.name.includes("gemini")) {
-                  console.log(` - ${m.name} (${m.displayName})`);
-                }
-              });
+              const modelNames = json.models
+                .map((m) => ` - ${m.name} (${m.displayName})`)
+                .join("\n");
+              console.log(modelNames);
+              fs.writeFileSync("models_list.txt", modelNames);
             } else {
               console.log("Received data:", json);
             }

@@ -21,6 +21,8 @@ export async function generateDesign(formData: FormData, clientApiKey?: string) 
     const arrayBuffer = await file.arrayBuffer();
     const base64Image = Buffer.from(arrayBuffer).toString("base64");
 
+    // Construct the prompt for Image-to-Image / Editing
+    // We pass the user's image and the instruction.
     const prompt = [
       { text: promptText },
       {
@@ -31,9 +33,13 @@ export async function generateDesign(formData: FormData, clientApiKey?: string) 
       },
     ];
 
+    // Use gemini-2.5-flash-image as requested
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.5-flash-image",
       contents: prompt,
+      config: {
+        responseModalities: ["IMAGE"], // Force image output
+      }
     });
 
     const candidates = response.candidates;
@@ -46,6 +52,7 @@ export async function generateDesign(formData: FormData, clientApiKey?: string) 
       throw new Error("No generated content parts found");
     }
 
+    // Look for the executable code or inline image data
     for (const part of parts) {
        if (part.inlineData) {
          return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;

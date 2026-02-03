@@ -8,6 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
+import { checkAndSeedData } from "@/lib/demo-data";
 import { auth } from "@/lib/firebase/config";
 
 interface AuthContextType {
@@ -25,9 +26,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       setLoading(false);
+
+      if (user) {
+        try {
+          // Check and seed in background
+          await checkAndSeedData(user.uid);
+        } catch (e) {
+          console.error("Auto-seeding failed", e);
+        }
+      }
     });
 
     return () => unsubscribe();

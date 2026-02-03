@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Filter,
@@ -10,84 +10,64 @@ import {
   ArrowDownRight,
   Calendar,
   Eye,
+  Upload,
+  Database, // Icon for demo data
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// --- Mock Data ---
-const transactions = [
-  {
-    id: "TRX-9821",
-    customer: "Budi Santoso",
-    date: "19 Jan 2026, 10:30",
-    amount: 150000,
-    items: "Kopi Arabika (2), Snack (3)",
-    status: "Success",
-    payment: "QRIS",
-  },
-  {
-    id: "TRX-9820",
-    customer: "Siti Aminah",
-    date: "19 Jan 2026, 09:15",
-    amount: 325000,
-    items: "Paket Sembako A",
-    status: "Pending",
-    payment: "Transfer Bank",
-  },
-  {
-    id: "TRX-9819",
-    customer: "Rudi Hermawan",
-    date: "18 Jan 2026, 18:45",
-    amount: 45000,
-    items: "Pulsa 50rb",
-    status: "Success",
-    payment: "Cash",
-  },
-  {
-    id: "TRX-9818",
-    customer: "Dewi Lestari",
-    date: "18 Jan 2026, 14:20",
-    amount: 890000,
-    items: "Kemeja Batik Pria (2)",
-    status: "Failed",
-    payment: "E-Wallet",
-  },
-  {
-    id: "TRX-9817",
-    customer: "Andi Wijaya",
-    date: "18 Jan 2026, 11:10",
-    amount: 120000,
-    items: "Madu Hutan Asli",
-    status: "Success",
-    payment: "QRIS",
-  },
-  {
-    id: "TRX-9816",
-    customer: "Maya Putri",
-    date: "17 Jan 2026, 16:00",
-    amount: 250000,
-    items: "Skin Care Set",
-    status: "Success",
-    payment: "Transfer Bank",
-  },
-  {
-    id: "TRX-9815",
-    customer: "Eko Prasetyo",
-    date: "17 Jan 2026, 09:30",
-    amount: 65000,
-    items: "Token Listrik",
-    status: "Success",
-    payment: "Cash",
-  },
-];
+import { ImportTransactionModal } from "@/components/features/sales/ImportTransactionModal";
+import { useAuth } from "@/context/AuthContext";
+import { Transaction, subscribeToTransactions } from "@/lib/firebase/sales";
+import { generateDemoData } from "@/lib/demo-data";
 
 export default function SalesHistoryPage() {
+  const { user } = useAuth();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [generatingDemo, setGeneratingDemo] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const unsubscribe = subscribeToTransactions(user.uid, (data) => {
+        setTransactions(data);
+        setLoading(false);
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
+
+  const handleGenerateDemo = async () => {
+    if (!user) return;
+    if (
+      !window.confirm(
+        "Ini akan menambahkan data dummy ke akun Anda. Lanjutkan?",
+      )
+    )
+      return;
+
+    setGeneratingDemo(true);
+    try {
+      await generateDemoData(user.uid);
+      alert("Data dummy berhasil ditambahkan!");
+    } catch (e) {
+      console.error(e);
+      alert("Gagal menambahkan data.");
+    } finally {
+      setGeneratingDemo(false);
+    }
+  };
 
   const filteredTransactions = transactions.filter((trx) => {
-    const matchesSearch =
-      trx.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      trx.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const searchLower = searchQuery.toLowerCase();
+    const customerMatch = trx.customerName
+      ? trx.customerName.toLowerCase().includes(searchLower)
+      : false;
+    const idMatch = trx.id ? trx.id.toLowerCase().includes(searchLower) : false;
+    const matchesSearch = customerMatch || idMatch;
+
     const matchesStatus = statusFilter === "All" || trx.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -105,6 +85,27 @@ export default function SalesHistoryPage() {
     }
   };
 
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return "-";
+    // Handle Firestore Timestamp
+    if (timestamp.seconds) {
+      return new Date(timestamp.seconds * 1000).toLocaleString("id-ID", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+    return new Date(timestamp).toLocaleString();
+  };
+
+  const handleImport = (data: any[]) => {
+    // In real app, this would merge data
+    console.log("Imported data:", data);
+    // For now just close, as we mocked the success state in modal
+  };
+
   return (
     <div className="space-y-8 max-w-7xl mx-auto p-4 md:p-8">
       {/* Header */}
@@ -118,6 +119,29 @@ export default function SalesHistoryPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          {/* Demo Generator */}
+          <button
+            onClick={handleGenerateDemo}
+            disabled={generatingDemo}
+            className="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-purple-700 transition-all flex items-center gap-2 shadow-lg shadow-purple-900/20"
+          >
+            {generatingDemo ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Database className="w-4 h-4" />
+            )}
+            Isi Data Palsu
+          </button>
+
+          {/* Import Button */}
+          <button
+            onClick={() => setIsImportOpen(true)}
+            className="bg-[#0F4C75] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#0F4C75]/90 transition-all flex items-center gap-2 shadow-lg shadow-blue-900/20"
+          >
+            <Upload className="w-4 h-4" />
+            Import Data
+          </button>
+
           <button className="bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all flex items-center gap-2 shadow-sm">
             <Download className="w-4 h-4" />
             Export CSV
@@ -182,53 +206,62 @@ export default function SalesHistoryPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredTransactions.map((trx) => (
-                <tr
-                  key={trx.id}
-                  className="hover:bg-blue-50/30 transition-colors group"
-                >
-                  <td className="px-6 py-4 font-medium text-[#0F4C75]">
-                    {trx.id}
-                  </td>
-                  <td className="px-6 py-4 text-gray-500">{trx.date}</td>
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-gray-900">
-                      {trx.customer}
-                    </div>
-                  </td>
-                  <td
-                    className="px-6 py-4 text-gray-500 max-w-[200px] truncate"
-                    title={trx.items}
-                  >
-                    {trx.items}
-                  </td>
-                  <td className="px-6 py-4 font-bold text-gray-900">
-                    Rp {trx.amount.toLocaleString("id-ID")}
-                  </td>
-                  <td className="px-6 py-4 text-gray-500">{trx.payment}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={cn(
-                        "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border",
-                        getStatusColor(trx.status),
-                      )}
-                    >
-                      {trx.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="p-2 text-gray-400 hover:text-[#0F4C75] hover:bg-blue-50 rounded-lg transition-all">
-                      <Eye className="w-4 h-4" />
-                    </button>
+              {loading ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-gray-400 mx-auto" />
                   </td>
                 </tr>
-              ))}
-              {filteredTransactions.length === 0 && (
+              ) : filteredTransactions.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center py-12 text-gray-500">
                     Tidak ada transaksi yang ditemukan.
                   </td>
                 </tr>
+              ) : (
+                filteredTransactions.map((trx) => (
+                  <tr
+                    key={trx.id}
+                    className="hover:bg-blue-50/30 transition-colors group"
+                  >
+                    <td className="px-6 py-4 font-medium text-[#0F4C75] text-xs">
+                      {trx.id?.substring(0, 8).toUpperCase()}
+                    </td>
+                    <td className="px-6 py-4 text-gray-500 text-sm">
+                      {formatDate(trx.date)}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-gray-900">
+                        {trx.customerName || "Customer Umum"}
+                      </div>
+                      <div className="text-xs text-gray-400">{trx.source}</div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-500 max-w-[200px] truncate">
+                      {trx.items?.length || 1} Item
+                    </td>
+                    <td className="px-6 py-4 font-bold text-gray-900">
+                      Rp {trx.totalAmount.toLocaleString("id-ID")}
+                    </td>
+                    <td className="px-6 py-4 text-gray-500">
+                      {trx.paymentMethod}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={cn(
+                          "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border",
+                          getStatusColor(trx.status),
+                        )}
+                      >
+                        {trx.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button className="p-2 text-gray-400 hover:text-[#0F4C75] hover:bg-blue-50 rounded-lg transition-all">
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
@@ -250,6 +283,12 @@ export default function SalesHistoryPage() {
           </div>
         </div>
       </div>
+
+      <ImportTransactionModal
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
+        onImport={handleImport}
+      />
     </div>
   );
 }

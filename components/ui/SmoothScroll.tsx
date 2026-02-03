@@ -7,8 +7,15 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+import { usePathname } from "next/navigation"; // Add import
+
 export const SmoothScroll = () => {
+  const pathname = usePathname(); // Get pathname
+
   useEffect(() => {
+    // Disable smooth scroll on chat page to allow native div scrolling
+    if (pathname === "/chat") return;
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -33,7 +40,7 @@ export const SmoothScroll = () => {
         lenis.raf(time * 1000);
       });
     };
-  }, []);
+  }, [pathname]); // Re-run effect when pathname changes
 
-  return null; // This component doesn't render anything visible
+  return null;
 };

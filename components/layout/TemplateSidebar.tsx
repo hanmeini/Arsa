@@ -3,20 +3,28 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, History, Grid, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  User,
+  History,
+  Grid,
+  LogOut,
+  Sparkles,
+} from "lucide-react";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 import { useRouter } from "next/navigation";
-import LooksOneIcon from '@mui/icons-material/LooksOne';
-import LooksTwoIcon from '@mui/icons-material/LooksTwo';
-import Looks3Icon from '@mui/icons-material/Looks3';
+import LooksOneIcon from "@mui/icons-material/LooksOne";
+import LooksTwoIcon from "@mui/icons-material/LooksTwo";
+import Looks3Icon from "@mui/icons-material/Looks3";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   // Specific Templates
-  { name: "Template 1", href: "/template/1", icon: LooksOneIcon },
-  { name: "Template 2", href: "/template/2", icon: LooksTwoIcon },
-  { name: "Template 3", href: "/template/3", icon: Looks3Icon },
+  { name: "Fresh & Natural", href: "/template/1", icon: LooksOneIcon },
+  { name: "Luxury & Elegant", href: "/template/2", icon: LooksTwoIcon },
+  { name: "Minimalist Studio", href: "/template/3", icon: Looks3Icon },
+  { name: "Custom Design", href: "/template/custom", icon: Sparkles },
   { name: "History Generate", href: "/history", icon: History },
 ];
 
@@ -93,7 +101,7 @@ export function TemplateSidebar() {
           <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white shadow-sm group-hover:scale-110 transition-transform">
             Pro
           </div>
-          <Link href='/pricing' className="flex-1">
+          <Link href="/pricing" className="flex-1">
             <p className="text-sm font-bold text-gray-900 group-hover:text-[#FF9600] transition-colors">
               Upgrade to Plus
             </p>

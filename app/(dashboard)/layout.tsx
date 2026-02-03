@@ -7,6 +7,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { TemplateSidebar } from "@/components/layout/TemplateSidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
   children,
@@ -38,7 +39,14 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-gray-50">
       {!isChatPage && (isTemplatePage ? <TemplateSidebar /> : <Sidebar />)}
-      <main className="flex-1 pb-16 md:pb-0 min-h-screen transition-all duration-300 w-full relative">
+      <main
+        className={cn(
+          "flex-1 transition-all duration-300 w-full relative",
+          isChatPage
+            ? "h-screen overflow-hidden p-0" // Strict full height for chat
+            : "min-h-screen pb-16 md:pb-0", // Default for others
+        )}
+      >
         {children}
       </main>
       {!isChatPage && <BottomNav />}

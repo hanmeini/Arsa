@@ -7,8 +7,8 @@ import Link from "next/link";
 const templates = [
   {
     id: 1,
-    title: "Jus Semangka",
-    desc: "1jt orang menyukai postingan ide ini di Instagram",
+    title: "Fresh & Natural",
+    desc: "Gaya segar dengan elemen alam dan cahaya natural.",
     users: [
       "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop",
@@ -20,8 +20,8 @@ const templates = [
   },
   {
     id: 2,
-    title: "Body Care",
-    desc: "1jt orang menyukai postingan ide ini di Instagram",
+    title: "Luxury & Elegant",
+    desc: "Gaya mewah dengan podium dan pencahayaan dramatis.",
     users: [
       "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop",
       "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop",
@@ -33,8 +33,8 @@ const templates = [
   },
   {
     id: 3,
-    title: "Hair Care",
-    desc: "1jt orang menyukai postingan ide ini di Instagram",
+    title: "Minimalist Studio",
+    desc: "Gaya bersih dan modern dengan geometri simpel.",
     users: [
       "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop",
       "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
@@ -49,12 +49,35 @@ const templates = [
 export function TemplatesSection() {
   return (
     <div>
-      <h3 className="text-xl font-bold text-gray-900 mb-1">
-        Paling banyak dipakai
-      </h3>
-      <p className="text-gray-400 text-sm mb-6">
-        Ide desain yang banyak digunakan pelaku usaha di Instagram
-      </p>
+      <div className="flex items-end justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">
+            Paling banyak dipakai
+          </h3>
+          <p className="text-gray-400 text-sm">
+            Ide desain yang banyak digunakan pelaku usaha di Instagram
+          </p>
+        </div>
+        <Link
+          href="/template/custom"
+          className="text-[#0F4C75] text-sm font-semibold hover:underline flex items-center gap-1 shrink-0"
+        >
+          Lihat template lain
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {templates.map((template) => (

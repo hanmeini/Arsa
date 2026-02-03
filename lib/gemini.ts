@@ -85,83 +85,54 @@ export async function generateDashboardData(month: string = "Januari", year: str
       data: [10, 25, 40, 30, 45, 35, 50, 40, 60, 55, 70, 65, 80]
     }
   };
-
-  /* 
-  // Original API Logic disabled
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-
-  const prompt = `
-    Generate a JSON object for a design dashboard for the month of ${month} ${year}.
-    The response must be a valid JSON object without any markdown formatting or code blocks.
-    
-    Structure:
-    {
-      "stats": {
-        "views": "1.245", // string with thousand separator, vary based on month
-        "sales": "156", // string
-        "orders": "56", // string
-        "trend": 12 // number, percentage increase
-      },
-      "trend": {
-        "year": "${year}",
-        "description": "Trend desain untuk bulan ${month}",
-        "data": [10, 25, 15, 30, 45, 35, 50, 40, 60, 55, 70, 65, 80] // Array of 13 numbers (0-100) representing curve for ${month}
-      }
-    }
-    
-    Make the numbers and chart curve valid and slightly different than a generic dataset to feel dynamic for ${month}.
-  `;
-
-  try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    // Clean up potential markdown code block syntax if Gemini adds it
-    const jsonString = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const data = JSON.parse(jsonString);
-    
-    // Cache the data (1 hour = 3600000ms)
-    if (typeof window !== "undefined") {
-      localStorage.setItem(cacheKey, JSON.stringify(data));
-      localStorage.setItem(cacheExpiryKey, (Date.now() + 3600000).toString());
-      console.log("Dashboard data cached successfully");
-    }
-    
-    return data;
-  } catch (error: any) {
-    console.error("Failed to generate dashboard data:", error);
-    
-    // Try to use expired cache as last resort
-    if (typeof window !== "undefined") {
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        console.log("Using expired cache due to API error");
-        return JSON.parse(cached);
-      }
-    }
-    
-    // Fallback data with quota warning
-    console.warn("⚠️ Using fallback data - Gemini API quota may be exceeded");
-    return {
-      stats: {
-        views: "1.245",
-        sales: "156",
-        orders: "56",
-        trend: 12
-      },
-      trend: {
-        year: "2026",
-        description: "Mengikuti perubahan kebutuhan dan selera desain",
-        data: [10, 25, 40, 30, 45, 35, 50, 40, 60, 55, 70, 65, 80]
-      }
-    };
-  }
-  */
 }
 
-export async function getChatResponse(history: { role: "user" | "model"; parts: string }[], message: string) {
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+const SYSTEM_INSTRUCTION = `
+Anda adalah Arsa, asisten AI yang cerdas dan ramah yang khusus membantu pelaku UMKM (Usaha Mikro, Kecil, dan Menengah) dan bisnis. Tugas utama Anda adalah memberikan saran bisnis, strategi pemasaran, manajemen stok, dan solusi praktis untuk masalah usaha. 
+
+Aturan Interaksi:
+1. Fokus Utama: Jawablah pertanyaan seputar bisnis, kewirausahaan, manajemen, pemasaran, dan pengembangan produk.
+2. Penolakan Sopan: Jika pengguna bertanya tentang topik di luar bisnis (seperti politik, gosip selebriti, hiburan, atau masalah pribadi yang tidak relevan dengan usaha), tolak dengan sopan dan alihkan kembali ke topik UMKM.
+3. Gaya Bahasa: Gunakan bahasa Indonesia yang luwes, suportif, profesional namun santai (casual professional).
+4. FORMAT OUTPUT (PENTING):
+   - Gunakan format 'Point-by-Point' (Bullet points) untuk menjelaskan langkah-langkah atau daftar ide.
+   - Gunakan **Bold** untuk penekanan kata kunci penting.
+   - Hindari paragraf teks yang terlalu panjang (wall of text). Pecah menjadi paragraf pendek agar mudah dibaca di layar HP.
+   - Gunakan heading (# subjudul) jika jawaban cukup panjang.
+5. Motivasi: Berikan semangat dan motivasi kepada pengguna dalam menjalankan usahanya.
+`;
+
+export type ModelType = 'auto' | 'fast' | 'reasoning' | 'pro';
+
+export async function getChatResponse(
+  history: { role: "user" | "model"; parts: string }[],
+  message: string,
+  modelType: ModelType = 'auto'
+) {
+  let modelName = 'gemini-2.5-flash'; // Default (Auto)
+  let instructionOverride = SYSTEM_INSTRUCTION;
+
+  switch (modelType) {
+    case 'fast':
+      modelName = 'gemini-2.5-flash'; // Faster, optimized for latency
+      break;
+    case 'reasoning':
+      modelName = 'gemini-2.5-flash';
+      // Add logic enforcement to instruction
+      instructionOverride += `\n\nPENTING: Gunakan kemampuan penalaran mendalam. Sebelum menjawab, pikirkan langkah demi langkah, analisis pro dan kontra, dan berikan argumen yang logis dan terstruktur. Jelaskan alasan di balik setiap saran Anda.`;
+      break;
+    case 'pro':
+      modelName = 'gemini-2.5-flash'; // Higher capability
+      break;
+    default: // auto
+      modelName = 'gemini-2.5-flash';
+      break;
+  }
+
+  const model = genAI.getGenerativeModel({ 
+    model: modelName,
+    systemInstruction: instructionOverride
+  });
   
   const chat = model.startChat({
     history: history.map(msg => ({
