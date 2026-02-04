@@ -1,54 +1,66 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY!;
-const genAI = new GoogleGenerativeAI(apiKey);
-
 const MODEL_NAME = "gemini-2.5-flash";
 
+// Helper to initialize Gemini client lazily
+// This prevents the app from crashing on import if env vars are missing
+const getGenAI = () => {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("Gemini API Key is not configured (GEMINI_API_KEY or NEXT_PUBLIC_GEMINI_API_KEY)");
+  }
+  return new GoogleGenerativeAI(apiKey);
+};
+
 export async function generateCaption(prompt: string, imageBase64?: string) {
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+  try {
+    const genAI = getGenAI();
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
-  const maxRetries = 3;
-  let retryCount = 0;
+    const maxRetries = 3;
+    let retryCount = 0;
 
-  while (retryCount < maxRetries) {
-    try {
-      let result;
-      if (imageBase64) {
-        // Need to strip the header (e.g., "data:image/jpeg;base64,") for the API if it exists,
-        // but GenerativeAI SDK usually expects the base64 string directly or with inline data part.
-        // Let's standardise on passing the raw base64 data portion + mimeType.
+    while (retryCount < maxRetries) {
+      try {
+        let result;
+        if (imageBase64) {
+          // Need to strip the header (e.g., "data:image/jpeg;base64,") for the API if it exists,
+          // but GenerativeAI SDK usually expects the base64 string directly or with inline data part.
+          // Let's standardise on passing the raw base64 data portion + mimeType.
+          
+          // Basic parsing if full data URI is passed
+          const mimeType = imageBase64.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/)?.[1] || "image/jpeg";
+          const base64Data = imageBase64.split(",")[1] || imageBase64;
+
+          const imagePart = {
+            inlineData: {
+              data: base64Data,
+              mimeType: mimeType,
+            },
+          };
+
+          result = await model.generateContent([prompt, imagePart]);
+        } else {
+          result = await model.generateContent(prompt);
+        }
+
+        const response = await result.response;
+        return response.text();
+      } catch (error: any) {
+        if (error?.status === 429 && retryCount < maxRetries - 1) {
+          console.warn(`Gemini API rate limited. Retrying (${retryCount + 1}/${maxRetries})...`);
+          retryCount++;
+          // Wait before retrying (exponential backoff: 1s, 2s, 4s)
+          await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+          continue;
+        }
         
-        // Basic parsing if full data URI is passed
-        const mimeType = imageBase64.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/)?.[1] || "image/jpeg";
-        const base64Data = imageBase64.split(",")[1] || imageBase64;
-
-        const imagePart = {
-          inlineData: {
-            data: base64Data,
-            mimeType: mimeType,
-          },
-        };
-
-        result = await model.generateContent([prompt, imagePart]);
-      } else {
-        result = await model.generateContent(prompt);
+        throw error;
       }
-
-      const response = await result.response;
-      return response.text();
-    } catch (error: any) {
-      if (error?.status === 429 && retryCount < maxRetries - 1) {
-        console.warn(`Gemini API rate limited. Retrying (${retryCount + 1}/${maxRetries})...`);
-        retryCount++;
-        // Wait before retrying (exponential backoff: 1s, 2s, 4s)
-        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
-        continue;
-      }
-      
-      console.error("Gemini API Error:", error);
-      throw new Error(`Failed to generate caption with Gemini: ${error.message}`);
     }
+  } catch (error: any) {
+    console.error("Gemini API Error:", error);
+    throw new Error(`Failed to generate caption with Gemini: ${error.message}`);
   }
 }
 
@@ -109,47 +121,49 @@ export async function getChatResponse(
   message: string,
   modelType: ModelType = 'auto'
 ) {
-  let modelName = 'gemini-2.5-flash'; // Default (Auto)
-  let instructionOverride = SYSTEM_INSTRUCTION;
-
-  switch (modelType) {
-    case 'fast':
-      modelName = 'gemini-2.5-flash'; // Faster, optimized for latency
-      break;
-    case 'reasoning':
-      modelName = 'gemini-2.5-flash';
-      // Add logic enforcement to instruction
-      instructionOverride += `\n\nPENTING: Gunakan kemampuan penalaran mendalam. Sebelum menjawab, pikirkan langkah demi langkah, analisis pro dan kontra, dan berikan argumen yang logis dan terstruktur. Jelaskan alasan di balik setiap saran Anda.`;
-      break;
-    case 'pro':
-      modelName = 'gemini-2.5-flash'; // Higher capability
-      break;
-    default: // auto
-      modelName = 'gemini-2.5-flash';
-      break;
-  }
-
-  const model = genAI.getGenerativeModel({ 
-    model: modelName,
-    systemInstruction: instructionOverride
-  });
-  
-  const chat = model.startChat({
-    history: history.map(msg => ({
-      role: msg.role,
-      parts: [{ text: msg.parts }],
-    })),
-    generationConfig: {
-      maxOutputTokens: 1000,
-    },
-  });
-
   try {
+    let modelName = 'gemini-2.5-flash'; // Default (Auto)
+    let instructionOverride = SYSTEM_INSTRUCTION;
+
+    switch (modelType) {
+      case 'fast':
+        modelName = 'gemini-2.5-flash'; // Faster, optimized for latency
+        break;
+      case 'reasoning':
+        modelName = 'gemini-2.5-flash';
+        // Add logic enforcement to instruction
+        instructionOverride += `\n\nPENTING: Gunakan kemampuan penalaran mendalam. Sebelum menjawab, pikirkan langkah demi langkah, analisis pro dan kontra, dan berikan argumen yang logis dan terstruktur. Jelaskan alasan di balik setiap saran Anda.`;
+        break;
+      case 'pro':
+        modelName = 'gemini-2.5-flash'; // Higher capability
+        break;
+      default: // auto
+        modelName = 'gemini-2.5-flash';
+        break;
+    }
+
+    const genAI = getGenAI();
+    const model = genAI.getGenerativeModel({ 
+      model: modelName,
+      systemInstruction: instructionOverride
+    });
+    
+    const chat = model.startChat({
+      history: history.map(msg => ({
+        role: msg.role,
+        parts: [{ text: msg.parts }],
+      })),
+      generationConfig: {
+        maxOutputTokens: 1000,
+      },
+    });
+
     const result = await chat.sendMessage(message);
     const response = await result.response;
     return response.text();
   } catch (error) {
     console.error("Gemini Chat Error:", error);
-    throw new Error("Maaf, Arsa sedang sibuk. Coba lagi nanti ya!");
+    // Return a friendly error message to the user instead of throwing
+    return "Maaf, Arsa sedang sibuk atau ada gangguan koneksi. Coba lagi nanti ya!";
   }
 }
