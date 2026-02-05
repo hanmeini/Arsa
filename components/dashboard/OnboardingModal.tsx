@@ -13,12 +13,22 @@ export function OnboardingModal() {
 
   useEffect(() => {
     setMounted(true);
+
+    // Check if modal has already been shown this session
+    const modalShown = sessionStorage.getItem("onboarding_modal_shown");
+
     // Check if user has social media data saved
     const savedData = localStorage.getItem("user_social_media");
 
-    // If no data exists (first time or skipped), show modal
-    if (!savedData || savedData === "{}") {
-      const timer = setTimeout(() => setIsOpen(true), 1000);
+    // Only show modal if:
+    // 1. Modal hasn't been shown this session
+    // 2. User has no profile data (first time or skipped)
+    if (!modalShown && (!savedData || savedData === "{}")) {
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+        // Mark modal as shown for this session
+        sessionStorage.setItem("onboarding_modal_shown", "true");
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -31,14 +41,14 @@ export function OnboardingModal() {
       document.body.style.setProperty("overflow", "hidden", "important");
       document.body.style.setProperty("padding-right", `${scrollBarWidth}px`); // Prevent layout shift
       document.documentElement.style.setProperty("overflow", "hidden", "important");
-      
+
       // Stop Lenis Scroll
       window.dispatchEvent(new CustomEvent("toggle-scroll-lock", { detail: { locked: true } }));
     } else {
       document.body.style.removeProperty("overflow");
       document.body.style.removeProperty("padding-right");
       document.documentElement.style.removeProperty("overflow");
-      
+
       // Resume Lenis Scroll
       window.dispatchEvent(new CustomEvent("toggle-scroll-lock", { detail: { locked: false } }));
     }
@@ -46,7 +56,7 @@ export function OnboardingModal() {
       document.body.style.removeProperty("overflow");
       document.body.style.removeProperty("padding-right");
       document.documentElement.style.removeProperty("overflow");
-      
+
       // Resume Lenis Scroll on cleanup
       window.dispatchEvent(new CustomEvent("toggle-scroll-lock", { detail: { locked: false } }));
     };

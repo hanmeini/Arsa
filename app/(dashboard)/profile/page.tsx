@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Loader2, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, Check, LogOut, AlertCircle } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
 
 // Moved outside to prevent re-renders losing focus
 const MinimalInput = ({
@@ -48,6 +50,8 @@ const MinimalInput = ({
 export default function SocialProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [formData, setFormData] = useState({
     instagram: "",
     tiktok: "",
@@ -79,6 +83,27 @@ export default function SocialProfilePage() {
     });
     setLoading(false);
     setTimeout(() => router.push("/dashboard"), 1000); // Redirect after short delay
+  };
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await signOut(auth);
+      toast.success("Berhasil Keluar", {
+        description: "Anda telah keluar dari akun.",
+        className: "bg-white border border-gray-100 shadow-xl",
+        icon: <Check className="w-4 h-4 text-green-600" />,
+      });
+      setTimeout(() => {
+        router.push("/login");
+      }, 500);
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Gagal keluar", {
+        description: "Terjadi kesalahan, silakan coba lagi.",
+      });
+      setLoggingOut(false);
+    }
   };
 
   return (
@@ -218,6 +243,98 @@ export default function SocialProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Logout Button - Fixed Position */}
+      <motion.button
+        onClick={() => setShowLogoutModal(true)}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+        className="fixed top-6 right-6 group flex items-center gap-3 px-5 py-3 bg-white border-2 border-[#FF9600] text-[#FF9600] rounded-full shadow-lg hover:bg-[#FF9600] hover:text-white transition-all duration-300 hover:shadow-xl hover:scale-105 z-50"
+      >
+        <LogOut className="w-5 h-5 transition-transform group-hover:rotate-12" />
+        <span className="font-bold text-sm tracking-wide hidden sm:inline">
+          Keluar
+        </span>
+      </motion.button>
+
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {showLogoutModal && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !loggingOut && setShowLogoutModal(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+            >
+              {/* Modal */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: "spring", duration: 0.5 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden"
+              >
+                {/* Decorative Top Bar */}
+                <div className="h-2 bg-gradient-to-r from-[#FF9600] via-[#F59E0B] to-[#FF9600]" />
+
+                {/* Modal Content */}
+                <div className="p-8">
+                  {/* Icon */}
+                  <div className="flex justify-center mb-6">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#FF9600]/10 to-[#F59E0B]/10 flex items-center justify-center relative">
+                      <AlertCircle className="w-10 h-10 text-[#FF9600] relative z-10" />
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <h2 className="text-2xl font-bold text-center text-[#FF9600] mb-3">
+                    Konfirmasi Keluar
+                  </h2>
+
+                  {/* Description */}
+                  <p className="text-center text-gray-600 mb-8 leading-relaxed">
+                    Apakah Anda yakin ingin keluar dari akun? Anda perlu login
+                    kembali untuk mengakses dashboard.
+                  </p>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowLogoutModal(false)}
+                      disabled={loggingOut}
+                      className="flex-1 px-6 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      disabled={loggingOut}
+                      className="flex-1 px-6 py-3 rounded-xl bg-[#FF9600] text-white font-bold hover:bg-[#e68a00] transition-all shadow-lg shadow-orange-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {loggingOut ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Keluar...
+                        </>
+                      ) : (
+                        <>
+                          <LogOut className="w-4 h-4" />
+                          Ya, Keluar
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

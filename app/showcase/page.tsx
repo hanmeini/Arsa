@@ -47,7 +47,7 @@ export default function ShowcasePage() {
           trigger: containerRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: 1.5,
+          scrub: 0.5, // Reduced from 1.5 for more responsive scrubbing
         },
       });
 
@@ -192,13 +192,14 @@ export default function ShowcasePage() {
           src="https://res.cloudinary.com/dzp6gu46f/video/upload/v1769152622/Chocolate_Drink_Product_Video_scrub_mzgc16.mp4"
           playsInline
           muted
-          className="w-full h-full object-cover will-change-transform"
+          preload="auto"
+          className="w-full h-full object-cover"
         />
 
         {/* Text Overlays Layer */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
           {/* Text 1: MOKAMISHU (New Start) */}
-          <div ref={addToRefs} className="absolute text-center px-4 top-[30%]">
+          <div ref={addToRefs} className="absolute text-center px-4 top-[20%]">
             <h1
               className={`${modernNegra.className} text-6xl md:text-9xl font-semibold tracking-[0em] scale-y-[1.25] origin-center bg-gradient-to-b from-white via-gray-300 to-gray-600 text-transparent bg-clip-text drop-shadow-2xl opacity-100 uppercase`}
             >

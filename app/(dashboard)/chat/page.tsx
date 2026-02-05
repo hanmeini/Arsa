@@ -49,32 +49,32 @@ const MODELS: {
   description: string;
   locked?: boolean;
 }[] = [
-  {
-    id: "auto",
-    name: "Arsa Auto",
-    icon: Sparkles,
-    description: "Cerdas & seimbang untuk setiap kebutuhan",
-  },
-  {
-    id: "fast",
-    name: "Arsa Cepat",
-    icon: Zap,
-    description: "Respon kilat untuk pertanyaan singkat",
-  },
-  {
-    id: "reasoning",
-    name: "Arsa Nalar",
-    icon: Brain,
-    description: "Analisis mendalam & logis",
-  },
-  {
-    id: "pro",
-    name: "Arsa Pro",
-    icon: Crown,
-    description: "Model tercanggih untuk masalah kompleks",
-    locked: true,
-  },
-];
+    {
+      id: "auto",
+      name: "Arsa Auto",
+      icon: Sparkles,
+      description: "Cerdas & seimbang untuk setiap kebutuhan",
+    },
+    {
+      id: "fast",
+      name: "Arsa Cepat",
+      icon: Zap,
+      description: "Respon kilat untuk pertanyaan singkat",
+    },
+    {
+      id: "reasoning",
+      name: "Arsa Nalar",
+      icon: Brain,
+      description: "Analisis mendalam & logis",
+    },
+    {
+      id: "pro",
+      name: "Arsa Pro",
+      icon: Crown,
+      description: "Model tercanggih untuk masalah kompleks",
+      locked: true,
+    },
+  ];
 
 export default function ChatPage() {
   const { user } = useAuth();
@@ -364,8 +364,8 @@ export default function ChatPage() {
                             ? "bg-gray-50"
                             : "hover:bg-gray-50",
                           model.locked &&
-                            !isPro &&
-                            "opacity-60 cursor-not-allowed hover:bg-transparent",
+                          !isPro &&
+                          "opacity-60 cursor-not-allowed hover:bg-transparent",
                         )}
                       >
                         <div
@@ -512,7 +512,7 @@ export default function ChatPage() {
           </div>
         ) : (
           // Empty State / Welcome View
-          <div className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-center max-w-4xl mx-auto w-full no-scrollbar">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-center max-w-4xl mx-auto w-full no-scrollbar pt-24 md:pt-8">
             <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="w-32 h-32 md:w-40 md:h-40 mx-auto relative mb-6">
                 <video

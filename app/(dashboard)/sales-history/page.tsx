@@ -119,20 +119,6 @@ export default function SalesHistoryPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          {/* Demo Generator */}
-          <button
-            onClick={handleGenerateDemo}
-            disabled={generatingDemo}
-            className="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-purple-700 transition-all flex items-center gap-2 shadow-lg shadow-purple-900/20"
-          >
-            {generatingDemo ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Database className="w-4 h-4" />
-            )}
-            Isi Data Palsu
-          </button>
-
           {/* Import Button */}
           <button
             onClick={() => setIsImportOpen(true)}
@@ -200,21 +186,19 @@ export default function SalesHistoryPage() {
                   Pembayaran
                 </th>
                 <th className="px-6 py-4 font-bold text-gray-700">Status</th>
-                <th className="px-6 py-4 font-bold text-gray-700 text-right">
-                  Aksi
-                </th>
+
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-12">
+                  <td colSpan={7} className="text-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-gray-400 mx-auto" />
                   </td>
                 </tr>
               ) : filteredTransactions.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-12 text-gray-500">
+                  <td colSpan={7} className="text-center py-12 text-gray-500">
                     Tidak ada transaksi yang ditemukan.
                   </td>
                 </tr>
@@ -255,11 +239,7 @@ export default function SalesHistoryPage() {
                         {trx.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="p-2 text-gray-400 hover:text-[#0F4C75] hover:bg-blue-50 rounded-lg transition-all">
-                        <Eye className="w-4 h-4" />
-                      </button>
-                    </td>
+
                   </tr>
                 ))
               )}
