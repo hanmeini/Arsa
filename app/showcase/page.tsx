@@ -1,8 +1,9 @@
 "use client";
 
 import localFont from "next/font/local";
+import { motion } from "framer-motion";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { Navbar } from "@/components/landing/Navbar";
@@ -14,6 +15,9 @@ const modernNegra = localFont({
 });
 
 export default function ShowcasePage() {
+  const [isNavbarVisible, setIsNavbarVisible] = useState(false);
+  const poweredByRef = useRef<HTMLElement>(null);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const textsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -21,11 +25,20 @@ export default function ShowcasePage() {
   const rightIconRef = useRef<HTMLDivElement>(null);
   const leftTextRef = useRef<HTMLDivElement>(null);
   const rightTextRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const video = videoRef.current;
     if (!video || !containerRef.current) return;
+
+    // Navbar Visibility Trigger
+    if (poweredByRef.current) {
+      ScrollTrigger.create({
+        trigger: poweredByRef.current,
+        start: "top 80%", // Show slightly before it fully enters
+        onEnter: () => setIsNavbarVisible(true),
+        onLeaveBack: () => setIsNavbarVisible(false),
+      });
+    }
 
     const setupAnimation = () => {
       // Main Timeline
@@ -33,10 +46,8 @@ export default function ShowcasePage() {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=10000", // Balanced length
+          end: "bottom bottom",
           scrub: 1.5,
-          pin: true,
-          anticipatePin: 1,
         },
       });
 
@@ -58,7 +69,7 @@ export default function ShowcasePage() {
       } else {
         // Mobile: Autoplay loop (Smooth performance, no scrubbing cost)
         video.loop = true;
-        video.play().catch(() => {});
+        video.play().catch(() => { });
       }
 
       // 2. Text Animations (Sequenced - Centered)
@@ -110,10 +121,11 @@ export default function ShowcasePage() {
           { opacity: 1, filter: "blur(0px)", duration: 1 },
           7,
         );
+        // Fade out at the very end to clean up before footer reveal
+        tl.to(texts[3], { opacity: 0, duration: 0.5 }, 9.5);
       }
 
       // 3. Floating Icons Animation (Parallax - Simulate Normal Scroll)
-      // The container is pinned for 10000px.
       // Differential Scroll: Right moves faster than Left, both move UP.
       if (leftIconRef.current) {
         tl.to(
@@ -139,6 +151,7 @@ export default function ShowcasePage() {
 
       if (video.readyState >= 1) {
         setupAnimation();
+        ScrollTrigger.refresh();
       } else {
         video.onloadedmetadata = () => setupAnimation();
       }
@@ -149,19 +162,30 @@ export default function ShowcasePage() {
     };
   }, []);
 
+  // Re-structure: I will just inject the state and ref, and the trigger logic inside the existing useEffect for simplicity, 
+  // or a new useEffect. A new useEffect is safer to avoid conflict with the return cleanup if not careful.
+
+  // Let's try to edit the COMPONENT START and the NAVBAR usage first.
+
+  // Wait, replace_file_content is better for contiguous blocks. 
+  // I will add state top level, and update Navbar usage.
+
+  // Re-structure: Helper to add refs
   const addToRefs = (el: HTMLDivElement | null) => {
     if (el && !textsRef.current.includes(el)) {
       textsRef.current.push(el);
     }
   };
-  textsRef.current = [];
+  textsRef.current = []; // Reset on re-render to ensure fresh list
 
   return (
-    <main className="w-full overflow-x-hidden">
-      <Navbar />
+    <main className="w-full relative">
+      <Navbar visible={isNavbarVisible} />
+
+
+      {/* Fixed Background Layer (Video & Content) */}
       <div
-        ref={containerRef}
-        className="h-screen w-full bg-black overflow-hidden relative flex items-center justify-center font-sans"
+        className="fixed inset-0 h-screen w-full bg-black overflow-hidden flex items-center justify-center font-sans z-0"
       >
         <video
           ref={videoRef}
@@ -208,7 +232,7 @@ export default function ShowcasePage() {
             <h2 className="text-6xl md:text-9xl font-black text-white tracking-tighter mix-blend-overlay">
               TASTE IT
             </h2>
-            <button className="mt-8 px-8 py-4 bg-white text-black rounded-full font-bold text-lg hover:scale-105 transition-transform pointer-events-auto">
+            <button className="mt-8 px-8 py-4 bg-white text-[#363B43] rounded-full font-bold text-lg hover:scale-105 transition-transform pointer-events-auto">
               Pesan Sekarang
             </button>
           </div>
@@ -276,39 +300,64 @@ export default function ShowcasePage() {
 
         {/* Scroll Indicator */}
 
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50 animate-bounce flex flex-col items-center gap-2">
-          <span className="text-xs uppercase tracking-widest">
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-70">
+          <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-white/50">
             Scroll to Explore
           </span>
-          <div className="w-px h-8 bg-gradient-to-b from-white to-transparent"></div>
+          <div className="w-[1px] h-12 bg-white/10 relative overflow-hidden">
+            <motion.div
+              animate={{ y: ["-100%", "100%"] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-x-0 h-1/2 bg-gradient-to-b from-transparent via-white to-transparent"
+            />
+          </div>
         </div>
       </div>
 
-      <section className="bg-white py-32 px-4 text-center border-t border-gray-100">
+      {/* Scroll Spacer to drive animation */}
+      <div ref={containerRef} className="relative z-10 w-full pointer-events-none" style={{ height: '400vh' }}></div>
+
+      <section ref={poweredByRef} className="relative z-20 bg-white py-32 px-4 text-center shadow-2xl -mt-32">
         <div className="max-w-4xl mx-auto space-y-6">
           <p className="text-sm font-bold tracking-widest text-gray-400 uppercase mb-4">
             Showcase Teknologi
           </p>
-          <h2 className="text-5xl md:text-7xl font-medium text-black tracking-tighter mb-6">
+          <h2 className="text-5xl md:text-7xl font-medium text-[#363B43] tracking-tighter mb-6" style={{ fontFamily: 'var(--font-guton)' }}>
             Ditenagai oleh{" "}
-            <span className="relative inline-block">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0A70AB] to-[#FE8B1D]">
-                Arsa
-              </span>
-              <span className="absolute -bottom-2 left-0 w-full h-[6px] bg-gradient-to-r from-[#0A70AB] to-[#FE8B1D] rounded-full"></span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0A70AB] to-[#FE8B1D]">
+              Arsa
             </span>
-            .
           </h2>
-          <p className="text-xl md:text-2xl text-gray-600 font-medium max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-600 font-medium max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-guton)' }}>
             Tampilan di atas adalah contoh showcase produk imersif yang dibangun
             menggunakan mesin web Arsa.
           </p>
           <div className="pt-8">
             <a
               href="/register"
-              className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all transform bg-[#FE8B1D] rounded-full hover:scale-105 hover:bg-[#e47207] shadow-xl"
+              className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform bg-[#FE8B1D] rounded-full shadow-xl overflow-hidden"
+              style={{ fontFamily: 'var(--font-guton)' }}
+              onMouseEnter={(e) => {
+                const btn = e.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                btn.style.setProperty("--x", `${x}px`);
+                btn.style.setProperty("--y", `${y}px`);
+              }}
             >
-              Mulai Sekarang
+              <span className="relative z-10 flex items-center gap-2 pointer-events-none">
+                Mulai Sekarang
+              </span>
+              {/* Ripple Effect */}
+              <span
+                className="absolute w-0 h-0 bg-[#0F4C75] rounded-full transition-all duration-700 ease-out group-hover:w-[450px] group-hover:h-[450px]"
+                style={{
+                  left: "var(--x)",
+                  top: "var(--y)",
+                  transform: "translate(-50%, -50%)",
+                }}
+              />
             </a>
           </div>
         </div>

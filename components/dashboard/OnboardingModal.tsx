@@ -2,35 +2,67 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, UserPlus } from "lucide-react";
 
 export function OnboardingModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    setMounted(true);
     // Check if user has social media data saved
     const savedData = localStorage.getItem("user_social_media");
 
     // If no data exists (first time or skipped), show modal
-    // You might want to more robustly check if it's an empty object '{}' too
     if (!savedData || savedData === "{}") {
-      // Small delay to not be jarring on load
       const timer = setTimeout(() => setIsOpen(true), 1000);
       return () => clearTimeout(timer);
     }
   }, []);
+
+  // Lock body scroll and pause Lenis when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      // Prevent scrolling on html and body
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.setProperty("overflow", "hidden", "important");
+      document.body.style.setProperty("padding-right", `${scrollBarWidth}px`); // Prevent layout shift
+      document.documentElement.style.setProperty("overflow", "hidden", "important");
+      
+      // Stop Lenis Scroll
+      window.dispatchEvent(new CustomEvent("toggle-scroll-lock", { detail: { locked: true } }));
+    } else {
+      document.body.style.removeProperty("overflow");
+      document.body.style.removeProperty("padding-right");
+      document.documentElement.style.removeProperty("overflow");
+      
+      // Resume Lenis Scroll
+      window.dispatchEvent(new CustomEvent("toggle-scroll-lock", { detail: { locked: false } }));
+    }
+    return () => {
+      document.body.style.removeProperty("overflow");
+      document.body.style.removeProperty("padding-right");
+      document.documentElement.style.removeProperty("overflow");
+      
+      // Resume Lenis Scroll on cleanup
+      window.dispatchEvent(new CustomEvent("toggle-scroll-lock", { detail: { locked: false } }));
+    };
+  }, [isOpen]);
 
   const handleGoToProfile = () => {
     setIsOpen(false);
     router.push("/profile");
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"> {/* Increased z-index slightly to be sure */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -77,6 +109,7 @@ export function OnboardingModal() {
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

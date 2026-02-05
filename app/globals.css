@@ -13,6 +13,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-guton);
+  --color-white: #fffff9;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,24 +23,37 @@
   }
 }
 
-@media (min-width: 768px) {
-  body {
-    cursor: none;
+/* Custom slow ping animation with longer pause */
+@keyframes ping-slow {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
   }
 
-  a,
-  button,
-  [role="button"] {
-    cursor: none;
+  15% {
+    transform: scale(2);
+    opacity: 0;
   }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }

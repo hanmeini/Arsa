@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { CustomCursor } from "@/components/ui/CustomCursor";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 
 const guton = localFont({
@@ -114,8 +113,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${guton.variable} antialiased`}>
-        <CustomCursor />
+      <body className={`${guton.variable} antialiased font-sans`}>
         <SmoothScroll />
         <AuthProvider>{children}</AuthProvider>
       </body>

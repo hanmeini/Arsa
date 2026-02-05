@@ -34,7 +34,19 @@ export const SmoothScroll = () => {
 
     gsap.ticker.lagSmoothing(0);
 
+    // Event listener for custom scroll lock event
+    const handleScrollLock = (e: CustomEvent) => {
+      if (e.detail?.locked) {
+        lenis.stop();
+      } else {
+        lenis.start();
+      }
+    };
+
+    window.addEventListener("toggle-scroll-lock" as any, handleScrollLock);
+
     return () => {
+      window.removeEventListener("toggle-scroll-lock" as any, handleScrollLock);
       lenis.destroy();
       gsap.ticker.remove((time) => {
         lenis.raf(time * 1000);

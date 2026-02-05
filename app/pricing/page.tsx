@@ -10,7 +10,7 @@ import { useState } from "react";
 
 const plans = [
   {
-    name: "Bayar Sesuai Pemakaian",
+    name: "Arsa Flex",
     price: "Gratis",
     unit: "/ kredit",
     description: "Render apa yang Anda inginkan, kapan pun Anda mau",
@@ -22,9 +22,10 @@ const plans = [
       "Dukungan terbatas",
     ],
     popular: false,
+    free: true,
   },
   {
-    name: "Helio Studio 250",
+    name: "Arsa Pro",
     price: "IDR 200k",
     unit: "/ bulan",
     description: "Bayar di muka, lebih hemat untuk render banyak",
@@ -38,11 +39,11 @@ const plans = [
     popular: true,
   },
   {
-    name: "Helio Unleashed",
-    price: "Hubungi Kami",
-    unit: "",
+    name: "Arsa Enterprise",
+    price: "IDR 500k",
+    unit: "/ bulan",
     description: "Harga yang disesuaikan dengan kebutuhan Anda",
-    buttonText: "Hubungi Sales",
+    buttonText: "Hubungi Kami",
     features: [
       "Semua fitur Paket Studio",
       "Render 8k / 360 tanpa batas",
@@ -50,6 +51,7 @@ const plans = [
       "Syarat pembayaran fleksibel",
     ],
     popular: false,
+    enterprise: true,
   },
 ];
 
@@ -98,8 +100,8 @@ export default function PricingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-snug text-[#0D0E25]">
-              Pilih Paket Harga yang Sesuai <br />
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight leading-snug text-[#0D0E25]">
+              Pilih Paket Harga yang Sesuai
               <div className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-2 align-middle mx-2">
                 <span>Kebutuhan UMKM</span>
                 {/* Avatar Group */}
@@ -127,9 +129,31 @@ export default function PricingPage() {
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-              <button className="px-8 py-3 bg-[#FE9600] text-white rounded-full font-bold shadow-lg shadow-orange-500/30 hover:bg-[#e47207] transition-all w-full sm:w-auto">
-                Mulai Sekarang
-              </button>
+              <Link
+                href="/register"
+                className="group relative inline-flex items-center justify-center gap-2 bg-[#FE9600] font-sans text-white px-8 py-3 rounded-full text-lg font-bold overflow-hidden transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-300/50 w-full sm:w-auto"
+                onMouseEnter={(e) => {
+                  const btn = e.currentTarget;
+                  const rect = btn.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  btn.style.setProperty("--x", `${x}px`);
+                  btn.style.setProperty("--y", `${y}px`);
+                }}
+              >
+                <span className="relative z-10 flex items-center gap-2 pointer-events-none">
+                  Mulai Sekarang
+                </span>
+
+                <span
+                  className="absolute w-0 h-0 bg-[#0F4C75] rounded-full transition-all duration-1000 ease-in-out group-hover:w-[450px] group-hover:h-[450px]"
+                  style={{
+                    left: "var(--x)",
+                    top: "var(--y)",
+                    transform: "translate(-50%, -50%)",
+                  }}
+                />
+              </Link>
               <button className="px-8 py-3 bg-white border border-gray-200 text-gray-600 rounded-full font-medium hover:bg-gray-50 transition-all shadow-sm w-full sm:w-auto">
                 Butuh bantuan memilih?
               </button>
@@ -149,20 +173,79 @@ export default function PricingPage() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-gray-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-start relative overflow-hidden group"
+                onMouseMove={(e) => {
+                  const card = e.currentTarget;
+                  const rect = card.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  card.style.setProperty("--mouse-x", `${x}px`);
+                  card.style.setProperty("--mouse-y", `${y}px`);
+                }}
+                className={cn(
+                  "group relative rounded-[2.5rem] p-8 md:p-10 border transition-all duration-300 flex flex-col items-start overflow-hidden h-full",
+                  // Conditional Styling
+                  plan.popular
+                    ? "bg-white border-[#FE9600] shadow-xl z-10"
+                    : plan.enterprise
+                      ? "bg-white border-[#0D0E25] shadow-xl hover:shadow-2xl z-10"
+                      : plan.free
+                        ? "bg-white border-gray-200 shadow-md hover:shadow-lg hover:border-gray-300"
+                        : "bg-white border-gray-100 shadow-lg hover:border-gray-200"
+                )}
               >
-                {/* Top Accents */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FE9600] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                {/* Spotlight Overlay */}
+                <div
+                  className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{
+                    background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), ${plan.popular ? 'rgba(254, 150, 0, 0.1)' :
+                      plan.enterprise ? 'rgba(13, 14, 37, 0.05)' :
+                        'rgba(0, 0, 0, 0.03)'
+                      }, transparent 40%)`
+                  }}
+                />
 
-                <h3 className="text-[#FE9600] font-bold uppercase tracking-wider text-sm mb-4">
+                {/* Popular Badge */}
+                {plan.popular && (
+                  <div className="absolute top-0 right-0 bg-[#FE9600] text-white text-[10px] font-bold px-3 pr-6 py-1 rounded-bl-xl uppercase tracking-widest z-20">
+                    Recommended
+                  </div>
+                )}
+
+                {/* Enterprise Badge */}
+                {plan.enterprise && (
+                  <div className="absolute top-0 right-0 bg-[#0D0E25] text-white text-[10px] font-bold px-3 pr-6 py-1 rounded-bl-xl uppercase tracking-widest z-20">
+                    Ultimate
+                  </div>
+                )}
+
+                {/* Free Badge */}
+                {plan.free && (
+                  <div className="absolute top-0 right-0 bg-gray-200 text-gray-600 text-[10px] font-bold px-3 pr-6 py-1 rounded-bl-xl uppercase tracking-widest z-20">
+                    Basic
+                  </div>
+                )}
+
+                {/* Top Shine (Subtle) */}
+                <div className={cn(
+                  "absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity",
+                  plan.popular ? "via-[#FE9600]" :
+                    plan.enterprise ? "via-[#0D0E25]" :
+                      plan.free ? "via-gray-300" : "via-[#0F4C75]"
+                )} />
+
+                <h3 className={cn(
+                  "font-bold uppercase tracking-wider text-sm mb-4",
+                  plan.popular ? "text-[#FE9600]" :
+                    plan.enterprise ? "text-[#0D0E25]" : "text-[#0F4C75]"
+                )}>
                   {plan.name}
                 </h3>
 
-                <p className="text-gray-500 text-sm mb-8 h-10 font-medium">
+                <p className="text-gray-500 text-sm mb-8 h-10 font-medium relative z-10">
                   {plan.description}
                 </p>
 
-                <div className="mb-8">
+                <div className="mb-8 relative z-10">
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl md:text-5xl font-bold text-[#0D0E25]">
                       {plan.price}
@@ -173,17 +256,31 @@ export default function PricingPage() {
                   </span>
                 </div>
 
-                <button className="w-full py-4 bg-[#0D0E25] text-white rounded-full font-bold mb-10 hover:bg-[#1a1c4b] transition-transform hover:scale-[1.02] active:scale-[0.98]">
-                  {plan.buttonText}
+                <button className={cn(
+                  "w-full py-4 rounded-full font-bold mb-10 relative z-10 overflow-hidden group/btn transition-colors duration-300",
+                  plan.popular
+                    ? "bg-[#FE9600] text-white shadow-lg shadow-orange-200 hover:bg-[#e47207]"
+                    : plan.enterprise
+                      ? "bg-[#0D0E25] text-white hover:bg-[#1a1c4b] shadow-lg"
+                      : "bg-[#0D0E25] text-white hover:bg-[#1a1c4b]"
+                )}>
+                  <span className="relative z-10">{plan.buttonText}</span>
+
+                  {/* Shine Effect */}
+                  <div className="absolute top-0 -left-[100%] w-full h-full group-hover/btn:left-[100%] transition-all duration-500 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
                 </button>
 
-                <div className="space-y-4 w-full">
+                <div className="space-y-4 w-full relative z-10">
                   <p className="font-bold text-sm text-[#0D0E25] mb-4 uppercase tracking-wide">
                     Termasuk...
                   </p>
                   {plan.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#FE9600] shrink-0 stroke-[3]" />
+                      <Check className={cn(
+                        "w-5 h-5 shrink-0 stroke-[3]",
+                        plan.popular ? "text-[#FE9600]" :
+                          plan.enterprise ? "text-[#0D0E25]" : "text-[#0F4C75]"
+                      )} />
                       <span className="text-gray-600 text-sm font-medium">
                         {feature}
                       </span>
@@ -196,26 +293,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FAQ / Project Section */}
-      <section className="py-20 relative z-10">
-        <div className="max-w-3xl mx-auto text-center px-4">
-          <div className="bg-white rounded-full shadow-lg border border-gray-100 p-2 inline-flex flex-wrap justify-center items-center gap-4 pr-6 cursor-pointer hover:scale-105 transition-transform group">
-            <div className="pl-4 md:pl-6 font-bold text-[#FE9600]">Proyek</div>
-            <div className="hidden md:block h-4 w-px bg-gray-200"></div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden ring-2 ring-transparent group-hover:ring-[#FE9600]/20 transition-all">
-                <img
-                  src="https://i.pravatar.cc/150?img=12"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <span className="font-bold text-sm text-[#0D0E25]">
-                Hubungi Tim Kami
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       <Footer />
     </div>

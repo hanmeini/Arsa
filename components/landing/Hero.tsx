@@ -6,7 +6,7 @@ import {
   ShoppingBag,
   TrendingUp,
   Sparkles,
-  ChevronRight,
+  Rocket,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,7 @@ export function Hero() {
       />
 
       {/* Glow Effect */}
+      {/* Glow Effect */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[500px] bg-blue-100/50 rounded-full blur-[100px] -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
@@ -35,7 +36,7 @@ export function Hero() {
           transition={{ duration: 0.5 }}
           className="flex justify-center mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-1 py-1 pr-4 rounded-full bg-[#005587] text-white text-sm font-medium shadow-md">
+          <div className="inline-flex items-center gap-2 px-1 py-1 pr-4 rounded-full bg-[#005587] text-white text-sm font-medium font-sans shadow-md">
             <div className="w-8 h-8 rounded-full bg-[#FF9600] p-1 flex items-center justify-center">
               <Image
                 src="/icons/Kepala koxy.svg"
@@ -54,19 +55,46 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl md:text-6xl lg:text-7xl font-bold font-sans text-gray-900 tracking-tight leading-[1.1] mb-6"
+          className="text-5xl md:text-6xl lg:text-7xl font-bold font-sans text-gray-900 tracking-tight leading-[1.1] mb-6"
         >
           Arsa, asisten{" "}
-          <span className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-transparent">
-            <Image
-              src="/icons/mingcute_chat-4-ai-fill.svg"
-              alt="Logo"
-              width={70}
-              height={70}
-            />
+          <span className="relative inline-block whitespace-nowrap">
+            <span className="relative z-10">cerdas</span>
+            {/* Spark Accent positioned above 's' */}
+            <svg
+              className="absolute -top-7 -right-1 w-8 h-8 text-[#FF9600] hidden md:block"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 2L12 6" />
+              <path d="M12 18L12 22" />
+              <path d="M4.93 4.93L7.76 7.76" />
+              <path d="M16.24 16.24L19.07 19.07" />
+              <path d="M2 12L6 12" />
+              <path d="M18 12L22 12" />
+              <path d="M4.93 19.07L7.76 16.24" />
+              <path d="M16.24 7.76L19.07 4.93" />
+            </svg>
           </span>{" "}
-          cerdas untuk
-          <br className="hidden md:block" /> usahamu
+          untuk
+          <br className="hidden md:block" />{" "}
+          <span className="relative inline-block px-1">
+            <span className="relative z-10 text-[#7C2D12]">usahamu</span>
+
+            {/* Selection Background (Beige/Cream) */}
+            <motion.span
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 0.8, delay: 0.5, ease: "circOut" }}
+              className="absolute top-0 bottom-0 left-0 bg-[#FDE68A] -z-0 rounded-sm"
+            />
+
+
+          </span>
         </motion.h1>
 
         {/* Subheadline */}
@@ -74,9 +102,9 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-lg md:text-xl font-medium font-sans text-[#000000]/80 max-w-2xl mx-auto mb-10"
+          className="text-base md:text-xl font-medium font-sans text-[#363B43]/80 max-w-2xl mx-auto mb-10"
         >
-          Solusi modern untuk kebutuhan usaha Anda
+          Solusi modern untuk kebutuhan usaha Anda. Kelola stok, keuangan, dan tren pasar dalam satu platform pintar.
         </motion.p>
 
         {/* CTA Button */}
@@ -88,9 +116,28 @@ export function Hero() {
         >
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 bg-[var(--accent)] font-sans text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-amber-600 transition-all hover:scale-105"
+            className="group relative inline-flex items-center gap-2 bg-[var(--accent)] font-sans text-white px-8 py-3 rounded-full text-lg font-medium overflow-hidden transition-all shadow-lg hover:shadow-orange-300/50"
+            onMouseEnter={(e) => {
+              const btn = e.currentTarget;
+              const rect = btn.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+              btn.style.setProperty("--x", `${x}px`);
+              btn.style.setProperty("--y", `${y}px`);
+            }}
           >
-            Coba Gratis <ChevronRight className="w-5 h-5" />
+            <span className="relative z-10 flex items-center gap-2 pointer-events-none">
+              Coba Gratis <Rocket className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </span>
+
+            <span
+              className="absolute w-0 h-0 bg-[#0F4C75] rounded-full transition-all duration-1000 ease-in-out group-hover:w-[450px] group-hover:h-[450px]"
+              style={{
+                left: "var(--x)",
+                top: "var(--y)",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
           </Link>
         </motion.div>
 
@@ -117,14 +164,14 @@ export function Hero() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
-            className="relative z-20 w-full max-w-[450px] md:max-w-none md:w-[650px] lg:w-[950px]"
+            className="relative z-20 w-full max-w-[550px] md:max-w-none md:w-[650px] lg:w-[950px]"
           >
             <Image
               src="/icons/phone.svg"
               alt="Phone Mockup"
               width={1200}
               height={2000}
-              className="w-full h-auto drop-shadow-2xl"
+              className="w-full h-auto drop-shadow-2xl scale-110 md:scale-100 origin-top"
               priority
             />
           </motion.div>
@@ -149,7 +196,7 @@ export function Hero() {
                 <h3 className="font-bold font-sans text-left text-gray-900 text-lg">
                   Penjualan
                 </h3>
-                <div className="flex items-center gap-1 text-sky-600 text-sm font-medium">
+                <div className="flex items-center gap-1 text-sky-600 text-sm font-medium font-sans">
                   <span>▲</span> 12% dari kemarin
                 </div>
               </div>
@@ -170,7 +217,7 @@ export function Hero() {
                   Trend Desain
                 </span>
               </div>
-              <p className="text-sm font-medium text-gray-300 mb-6 w-[15rem] text-left">
+              <p className="text-sm font-medium font-sans text-gray-300 mb-6 w-[15rem] text-left">
                 Mengikuti perubahan kebutuhan dan selera desain
               </p>
               <div className="flex gap-2 h-48 w-full">

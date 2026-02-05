@@ -27,6 +27,7 @@ export default function AboutPage() {
   const [vantaGlobeLoaded, setVantaGlobeLoaded] = useState(false);
   const [vantaDotsLoaded, setVantaDotsLoaded] = useState(false);
   const [vantaNetLoaded, setVantaNetLoaded] = useState(false);
+  const [imageRevealed, setImageRevealed] = useState(false); // New state for persistent image swap
 
   useEffect(() => {
     // Only initialize if libs are loaded
@@ -214,13 +215,15 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission Section (Modified with Vanta Dots and White Theme) */}
+      {/* Mission Section (Redesigned: Holographic Tech Frame) */}
       <section
         ref={missionRef}
-        className="py-24 relative overflow-hidden text-[#0D0E25]"
+        className="py-16 md:py-32 relative overflow-hidden"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+            {/* Content Side */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -228,29 +231,64 @@ export default function AboutPage() {
               transition={{ duration: 0.6 }}
               className="lg:order-2"
             >
-              <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-[#0D0E25]">
-                Misi Kami
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-[#0F4C75] text-xs font-bold tracking-widest uppercase mb-6">
+                <Target className="w-3 h-3" />
+                <span>Misi Utama</span>
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-[#0D0E25] leading-tight">
+                Membuka Potensi <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F4C75] to-[#0A70AB]">
+                  Ekonomi Digital.
+                </span>
               </h2>
-              <p className="text-gray-600 text-lg leading-relaxed mb-6 font-light">
-                Arsa lahir dari keinginan sederhana: meratakan akses teknologi
-                canggih bagi semua pelaku usaha. Kami melihat banyak potensi
-                UMKM yang terhambat karena kurangnya alat yang tepat.
+              <p className="text-gray-600 text-lg leading-relaxed mb-8 font-light max-w-lg">
+                Arsa hadir untuk menjembatani kesenjangan teknologi. Kami mengubah kompleksitas AI menjadi solusi sederhana yang bisa digunakan oleh siapa saja, dari warung kopi hingga manufaktur.
               </p>
 
               <div className="space-y-4">
                 {[
-                  "Demokratisasi Teknologi AI",
-                  "Pemberdayaan UMKM Indonesia",
-                  "Inovasi Berkelanjutan",
+                  { title: "Demokratisasi AI", desc: "Teknologi canggih untuk semua skala bisnis.", Icon: Lightbulb },
+                  { title: "Pemberdayaan UMKM", desc: "Alat bantu digital yang praktis & berdampak.", Icon: Users },
+                  { title: "Inovasi Berkelanjutan", desc: "Selalu beradaptasi dengan tren masa depan.", Icon: Target },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <CheckCircle className="text-[#0F4C75] w-5 h-5 flex-shrink-0" />
-                    <span className="font-medium text-[#0D0E25]">{item}</span>
-                  </div>
+                  <motion.div
+                    key={i}
+                    className="group relative rounded-2xl p-[1px] overflow-hidden bg-transparent"
+                    onMouseMove={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = e.clientX - rect.left;
+                      const y = e.clientY - rect.top;
+                      e.currentTarget.style.setProperty("--x", `${x}px`);
+                      e.currentTarget.style.setProperty("--y", `${y}px`);
+                    }}
+                  >
+                    {/* Static Border (Faint) */}
+                    <div className="absolute inset-0 bg-gray-200 rounded-2xl z-0" />
+
+                    {/* Spotlight Border (Blue, Cursor-following) */}
+                    <div
+                      className="absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+                      style={{
+                        background: `radial-gradient(400px circle at var(--x, 0px) var(--y, 0px), #0F4C75 0%, transparent 60%)`
+                      }}
+                    />
+
+                    {/* Card Content (Inner) */}
+                    <div className="relative z-10 flex items-start gap-4 p-5 rounded-2xl bg-white/80 backdrop-blur-md h-full transition-colors group-hover:bg-white/90">
+                      <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-[#0F4C75] shrink-0 group-hover:bg-[#0F4C75] group-hover:text-white transition-all duration-300 shadow-sm">
+                        <item.Icon className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[#0D0E25] text-lg mb-1 group-hover:text-[#0F4C75] transition-colors">{item.title}</h4>
+                        <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                      </div>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
 
+            {/* Visual Side (Holographic Frame) */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -258,14 +296,61 @@ export default function AboutPage() {
               transition={{ duration: 0.6 }}
               className="relative lg:order-1"
             >
-              <div className="relative h-[400px] w-full bg-white/10 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
-                <Image
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                  alt="Team Working"
-                  fill
-                  className="object-cover opacity-90"
-                />
-                <div className="absolute inset-0 bg-[#0F4C75]/20 mix-blend-overlay" />
+              <div className="relative p-2 md:p-4">
+                {/* Tech Brackets */}
+                <div className="absolute top-0 left-0 w-16 h-16 md:w-24 md:h-24 border-t-[4px] md:border-t-[6px] border-l-[4px] md:border-l-[6px] border-[#FE9600] rounded-tl-[2rem] md:rounded-tl-[3rem] z-20" />
+                <div className="absolute bottom-0 right-0 w-16 h-16 md:w-24 md:h-24 border-b-[4px] md:border-b-[6px] border-r-[4px] md:border-r-[6px] border-[#0F4C75] rounded-br-[2rem] md:rounded-br-[3rem] z-20" />
+
+                {/* Main Image Container */}
+                <motion.div
+                  className="relative h-[350px] md:h-[500px] w-full bg-gray-900 rounded-tl-[2rem] md:rounded-tl-[3rem] rounded-br-[2rem] md:rounded-br-[3rem] rounded-tr-lg rounded-bl-lg overflow-hidden group z-10"
+                  onMouseEnter={() => setImageRevealed(!imageRevealed)}
+                >
+                  {/* Image 1: Default (Base) */}
+                  <Image
+                    src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
+                    alt="Team Mission Base"
+                    fill
+                    className="object-cover opacity-90 transition-transform duration-700"
+                  />
+
+                  {/* Image 2: Hover (Spread Reveal) */}
+                  <motion.div
+                    className="absolute inset-0 z-10"
+                    initial="initial"
+                    animate={imageRevealed ? "hover" : "initial"}
+                    variants={{
+                      initial: { opacity: 0, scale: 1.05 }, // Simple crossfade with subtle zoom
+                      hover: { opacity: 1, scale: 1 }
+                    }}
+                    transition={{ duration: 0.8, ease: "easeInOut" }}
+                  >
+                    <Image
+                      src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                      alt="Team Mission Reveal"
+                      fill
+                      className="object-cover"
+                    />
+                    {/* Overlay Gradient for 2nd Image */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0D0E25]/90 via-transparent to-transparent" />
+                  </motion.div>
+
+                  {/* Overlay Gradient (Base) */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D0E25]/90 via-transparent to-transparent z-0" />
+
+                  {/* HUD Title Elements (Z-Index increased to stay on top) */}
+                  <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10 z-30 pointer-events-none">
+                    <h3 className="text-white text-xl md:text-3xl font-bold max-w-sm leading-tight drop-shadow-md">
+                      Membangun Ekosistem Digital Masa Depan
+                    </h3>
+                    <div className="h-1 w-12 md:w-20 bg-[#FE9600] mt-3 md:mt-4 rounded-full" />
+                  </div>
+
+
+                </motion.div>
+
+                {/* Decorative Background Blob */}
+                <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-blue-500/10 rounded-full blur-[80px]" />
               </div>
             </motion.div>
           </div>
@@ -278,11 +363,14 @@ export default function AboutPage() {
         className="py-24 relative overflow-hidden text-white"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+          <div className="text-center mb-16 relative z-10">
+            {/* Arsa Blue Soft Glow for Contrast */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[120%] bg-[#0F4C75]/50 blur-[80px] -z-10 rounded-full pointer-events-none" />
+
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 drop-shadow-lg">
               Terhubung dengan UMKM di Seluruh Indonesia
             </h2>
-            <p className="text-white/80 max-w-2xl mx-auto font-light text-lg">
+            <p className="text-white/80 max-w-2xl mx-auto font-light text-lg drop-shadow-md">
               Kami bangga menjadi bagian dari perjalanan sukses ribuan pengusaha
               di seluruh Indonesia.
             </p>
@@ -298,121 +386,122 @@ export default function AboutPage() {
                   - import logo1 from "@/assets/logo1.png";
                   - ganti string url dengan variable logo1
             */}
+
             {[
               {
                 id: 1,
-                top: "10%",
+                top: "12%",
                 left: "10%",
                 delay: 0,
-                image: "/images/tiebymin.png",
+                image: "/images/makaroningehe.jpg",
+                name: "Makaroni Ngehe",
+              },
+              {
+                id: 10,
+                top: "8%",
+                left: "40%",
+                delay: 1.0,
+                image: "/images/bojot.png",
+                name: "Bojot",
               },
               {
                 id: 2,
-                top: "15%",
-                left: "80%",
+                top: "10%",
+                left: "82%",
                 delay: 1.2,
                 image: "/images/roti gembong.png",
+                name: "Roti Gembong",
               },
               {
                 id: 3,
-                top: "35%",
+                top: "38%",
                 left: "20%",
                 delay: 0.5,
                 image: "/images/kopi kenangan.jpg",
+                name: "Kopi Kenangan",
               },
               {
                 id: 4,
-                top: "40%",
-                left: "70%",
+                top: "42%",
+                left: "60%",
                 delay: 2.1,
                 image: "/images/janji jiw.png",
+                name: "Janji Jiwa",
+              },
+              {
+                id: 12,
+                top: "45%",
+                left: "85%",
+                delay: 1.6,
+                image: "/images/bakpiapathok.png",
+                name: "Bakpia 25",
+              },
+              {
+                id: 11,
+                top: "68%",
+                left: "40%",
+                delay: 2.2,
+                image: "/images/dkriuk.jpg",
+                name: "Dkriuk",
               },
               {
                 id: 5,
-                top: "60%",
+                top: "80%",
                 left: "15%",
                 delay: 1.5,
                 image:
                   "/images/es-teh-nusantara-logo-png_seeklogo-438137-removebg-preview.png",
+                name: "Es Teh Nusantara",
               },
               {
                 id: 6,
-                top: "65%",
-                left: "85%",
+                top: "85%",
+                left: "78%",
                 delay: 0.8,
                 image: "/images/du anyam.png",
-              },
-              {
-                id: 7,
-                top: "25%",
-                left: "50%",
-                delay: 1.8,
-                image:
-                  "/images/Screen-Shot-2019-11-05-at-12.23.08-1024x962-removebg-preview.png",
-              },
-              {
-                id: 8,
-                top: "80%",
-                left: "40%",
-                delay: 2.5,
-                image: "/images/kopi kenangan.jpg",
-              },
-              {
-                id: 9,
-                top: "75%",
-                left: "60%",
-                delay: 0.3,
-                image:
-                  "/images/Screen-Shot-2019-11-05-at-12.23.08-1024x962-removebg-preview.png",
-              },
-              {
-                id: 10,
-                top: "10%",
-                left: "40%",
-                delay: 1.0,
-                image: "/images/roti gembong.png",
-              },
-              {
-                id: 11,
-                top: "50%",
-                left: "5%",
-                delay: 2.2,
-                image:
-                  "https://placehold.co/100x100/101324/FFFFFF?text=Logo+11",
-              },
-              {
-                id: 12,
-                top: "50%",
-                left: "90%",
-                delay: 1.6,
-                image:
-                  "https://placehold.co/100x100/101324/FFFFFF?text=Logo+12",
+                name: "Du Anyam",
               },
             ].map((item, i) => (
               <motion.div
                 key={item.id}
-                // Removed bg-white/10, backdrop-blur, border, shadow to support transparent logos
-                className="absolute w-24 h-24 flex items-center justify-center p-2"
+                className="absolute w-14 h-14 md:w-20 md:h-20 flex items-center justify-center perspective-[1000px] z-20 group"
                 style={{ top: item.top, left: item.left }}
                 animate={{
-                  y: [0, -20, 0],
-                  scale: [1, 1.1, 1], // Pulse animation preserved
-                  opacity: [0.7, 1, 0.7],
+                  y: [-12, 12, -12], // Smooth levitation
+                  rotate: [-3, 3, -3], // Subtle swaying
                 }}
                 transition={{
-                  duration: 3 + (i % 3),
+                  duration: 5 + (i % 4), // Slower, more organic duration
                   repeat: Infinity,
                   ease: "easeInOut",
                   delay: item.delay,
                 }}
               >
-                <div className="relative w-full h-full rounded-full overflow-hidden">
-                  <Image
-                    src={item.image} // Menggunakan gambar dari konfigurasi array di atas
-                    alt={`Mitra UMKM ${item.id}`}
-                    fill
-                    className="object-contain"
-                  />
+                {/* 3D Tilting Logo Container */}
+                <div className="relative w-full h-full p-3 bg-white backdrop-blur-sm rounded-full shadow-[0_0_25px_rgba(255,255,255,0.2)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:rotate-x-[25deg] group-hover:scale-95 group-hover:shadow-[0_20px_30px_rgba(0,0,0,0.15)] transform-style-3d">
+                  <div className="relative w-full h-full rounded-full overflow-hidden">
+                    <Image
+                      src={item.image}
+                      alt={`Mitra UMKM ${item.id}`}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+
+                {/* Holographic HUD Tooltip (High Contrast) */}
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] origin-bottom rotate-x-90 group-hover:rotate-x-0 pointer-events-none z-30">
+                  {/* White Glass Tag */}
+                  <div className="px-4 py-2 bg-white/95 backdrop-blur-md rounded-lg shadow-[0_0_20px_rgba(255,255,255,0.4)] flex flex-col items-center">
+                    <span className="text-[10px] md:text-xs font-bold text-[#0F4C75] tracking-widest uppercase whitespace-nowrap">
+                      {item.name}
+                    </span>
+                    {/* Decorative micro-line */}
+                    <div className="w-1/2 h-[2px] bg-[#FE9600] mt-1 rounded-full" />
+                  </div>
+
+                  {/* Hologram Beam Connector */}
+                  <div className="w-[1px] h-4 bg-gradient-to-b from-white/80 to-transparent" />
                 </div>
               </motion.div>
             ))}

@@ -1,266 +1,295 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Smile } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Smile, MapPin, Quote } from "lucide-react";
 
-const voices = [
+// Testimonial Data with Coordinates (approximate % positions on the map)
+const testimonials = [
   {
     id: 1,
     name: "Sari Wulandari",
     role: "Owner Kopi Kenangan Hati",
+    location: "Jakarta",
     avatar: "/avatars/user-1.jpg",
     quote:
       "Sejak pakai Arsa, stok bahan baku jadi lebih teratur. Nggak ada lagi drama kehabisan susu pas lagi rame pembeli. Sangat membantu!",
+    cx: 235, cy: 225, // Jakarta (West Java)
   },
   {
     id: 2,
     name: "Budi Santoso",
     role: "Founder Batik Modern",
+    location: "Yogyakarta",
     avatar: "/avatars/user-2.jpg",
     quote:
       "Fitur AI Content Creator-nya juara! Bikin caption Instagram jadi cepet banget, engagement juga naik karena captionnya relevan.",
+    cx: 305, cy: 235, // Yogyakarta (Central Java)
   },
   {
     id: 3,
     name: "Linda Kusuma",
     role: "CEO Snack Mantap",
+    location: "Medan",
     avatar: "/avatars/user-3.jpg",
     quote:
-      "Laporan keuangannya simpel tapi lengkap. Saya jadi tahu persis profit harian saya berapa tanpa harus hitung manual sampai malam.",
+      "Laporan keuangannya simpel tapi lengkap. Saya jadi tahu persis profit harian saya berapa tanpa harus hitung manual.",
+    cx: 125, cy: 85, // Medan (North Sumatra)
   },
   {
     id: 4,
     name: "Rahmat Hidayat",
-    role: "Pemilik Toko Kelontong Berkah",
+    role: "Toko Kelontong Berkah",
+    location: "Makassar",
     avatar: "/avatars/user-4.jpg",
     quote:
       "Dulu pusing ngurusin bon bon manual. Sekarang semua tercatat otomatis. Arsa bener-bener asisten yang bisa diandelin.",
+    cx: 440, cy: 195, // Makassar (South Sulawesi)
+  },
+  {
+    id: 5,
+    name: "Wayan Gede",
+    role: "Pengrajin Bali Art",
+    location: "Denpasar",
+    avatar: "/avatars/user-5.jpg",
+    quote:
+      "Sangat mudah digunakan bahkan untuk orang gaptek seperti saya. Orderan dari luar negeri jadi lebih terkelola rapi.",
+    cx: 390, cy: 250, // Bali
+  },
+  {
+    id: 6,
+    name: "Hendra Wijaya",
+    role: "Juragan Tambak",
+    location: "Balikpapan",
+    avatar: "/avatars/user-6.jpg",
+    quote:
+      "Arsa membantu saya memantau hasil panen tambak secara real-time. Bisnis jadi lebih efisien dan terkontrol.",
+    cx: 355, cy: 155, // Kalimantan
+  },
+  {
+    id: 7,
+    name: "Fransiskus Pigai",
+    role: "Kopi Papua Maju",
+    location: "Jayapura",
+    avatar: "/avatars/user-7.jpg",
+    quote:
+      "Aplikasi ini sangat user-friendly. Sangat membantu kami memasarkan kopi asli Papua ke pasar yang lebih luas.",
+    cx: 715, cy: 145, // Papua
   },
 ];
 
 export function TestimonialSection() {
+  const [activeId, setActiveId] = useState(1);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false); // Disabled auto-play by default
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(voices.length);
 
-  // Handle scroll events to update 'current' index
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const scrollLeft = scrollRef.current.scrollLeft;
-      const width = scrollRef.current.clientWidth;
-      const index = Math.round(
-        scrollLeft / (width / (window.innerWidth < 768 ? 1 : 3)),
-      );
-      // setCurrent(index);
-    }
-  };
-
+  // Center the map scroll on mount for mobile
   useEffect(() => {
-    const el = scrollRef.current;
-    if (el) {
-      el.addEventListener("scroll", handleScroll);
-      return () => el.removeEventListener("scroll", handleScroll);
+    if (scrollRef.current) {
+      const { scrollWidth, clientWidth } = scrollRef.current;
+      const scrollPos = (scrollWidth - clientWidth) / 2;
+      scrollRef.current.scrollLeft = scrollPos;
     }
   }, []);
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const cardWidth = 350;
-      const scrollAmount = direction === "left" ? -cardWidth : cardWidth;
-      scrollRef.current.scrollBy({
-        left: scrollAmount,
-        behavior: "smooth",
-      });
+  // Auto-cycle logic
+  useEffect(() => {
+    if (!isAutoPlaying) return;
 
-      const newIndex =
-        direction === "left"
-          ? Math.max(0, current - 1)
-          : Math.min(count - 1, current + 1);
-      setCurrent(newIndex);
-    }
-  };
-
-  const goTo = (index: number) => {
-    if (scrollRef.current) {
-      const cardWidth = 320;
-      scrollRef.current.scrollTo({
-        left: index * cardWidth,
-        behavior: "smooth",
+    const interval = setInterval(() => {
+      setActiveId((current) => {
+        const currentIndex = testimonials.findIndex((t) => t.id === current);
+        const nextIndex = (currentIndex + 1) % testimonials.length;
+        return testimonials[nextIndex].id;
       });
-      setCurrent(index);
-    }
-  };
+    }, 5000); // Change every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
+  const activeTestimonial = testimonials.find((t) => t.id === activeId);
 
   return (
-    <section className="py-20 md:py-28 bg-[#FAFAFA] overflow-hidden font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header & Nav */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 relative z-20">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl md:text-4xl font-light text-[#0D0E25] leading-tight mb-4">
-              Cerita dan Pesan dari{" "}
-              <span className="font-semibold text-[#0F4C75]">Mitra UMKM</span>
-            </h2>
-            <div className="h-1 w-28 bg-[#FF9600] rounded-full mb-6" />
-            <p className="text-gray-500 font-normal text-lg leading-relaxed max-w-xl">
-              Suara tulus dari para pelaku usaha yang berjuang dan bertumbuh
-              bersama Arsa, membawa semangat kewirausahaan untuk masa depan yang
-              lebih baik.
-            </p>
-          </div>
+    <section className="py-24 bg-[#FAFAFA] overflow-hidden font-sans relative">
+      {/* Background Decor - Optimized (Static SVG or lighter blurs) */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-blue-100/50 rounded-full mix-blend-multiply" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-orange-100/50 rounded-full mix-blend-multiply" />
+      </div>
 
-          {/* Desktop Nav Buttons */}
-          <div className="hidden md:flex gap-4 shrink-0">
-            <button
-              onClick={() => scroll("right")} // Reversed
-              className="w-12 h-12 flex items-center justify-center rounded-xl border border-gray-300 bg-white text-gray-600 hover:text-[#0F4C75] hover:border-[#0F4C75] transition-all duration-200 shadow-sm"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <button
-              onClick={() => scroll("left")} // Reversed
-              className="w-12 h-12 flex items-center justify-center rounded-xl border border-gray-300 bg-white text-gray-600 hover:text-[#0F4C75] hover:border-[#0F4C75] transition-all duration-200 shadow-sm"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold font-sans text-[#0D0E25] mb-4">
+            Dipercaya Usaha di{" "}
+            <span className="text-[#0F4C75] relative inline-block">
+              Seluruh Indonesia
+              <svg
+                className="absolute -bottom-2 left-0 w-full h-3 text-[#FF9600] opacity-60"
+                viewBox="0 0 100 10"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0 5 Q 50 10 100 5"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  fill="none"
+                />
+              </svg>
+            </span>
+          </h2>
+          <p className="text-gray-500 text-lg font-medium font-sans max-w-xl mx-auto">
+            Dari Sabang sampai Merauke, Arsa membantu ribuan UMKM naik kelas dengan teknologi pintar.
+          </p>
         </div>
 
-        <div className="relative w-full flex flex-col md:block min-h-[450px]">
-          {/* Mobile Featured Image */}
-          <div className="block md:hidden w-full h-[380px] mb-8">
-            <div className="relative h-full w-full rounded-3xl overflow-hidden shadow-lg group">
-              <Image
-                src="/images/testimonials.png"
-                alt="Testimonial Cover"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F4C75] via-[#0F4C75]/60 to-transparent opacity-90" />
+        {/* Map Container - Flex layout for mobile, Block/Absolute for desktop */}
+        <div className="relative w-full flex flex-col md:block min-h-[500px] md:aspect-[2/1] md:h-[600px] group">
 
-              <div className="absolute bottom-0 left-0 p-8 w-full z-10">
-                <div className="mb-4">
-                  <Image src="/icons/ooui_quotes-ltr.svg" alt="Quote" width={56} height={56} />
-                </div>
-                <h3 className="text-white text-2xl md:text-3xl font-bold leading-tight">
-                  Sekarang ngurus usaha jadi lebih jelas arahnya
-                </h3>
-              </div>
+          {/* Stylized Map SVG & Hotspots Combined */}
+          {/* Mobile: Scrollable horizontal container. Desktop: Absolute full container. */}
+          <div ref={scrollRef} className="w-full overflow-x-auto md:overflow-visible h-[350px] md:h-full md:absolute md:inset-0 scrollbar-hide cursor-grab active:cursor-grabbing md:cursor-default">
+            <div className="min-w-[900px] md:min-w-0 w-full h-full flex items-center justify-center md:scale-110 origin-center transition-transform duration-500 pb-0 md:pb-24">
+              <svg viewBox="0 0 787 316" className="w-full h-full">
+                {/* User's Map Image */}
+                <image
+                  href="/images/peta-indonesia.svg"
+                  x="0"
+                  y="0"
+                  width="787"
+                  height="316"
+                  preserveAspectRatio="xMidYMid meet"
+                />
+
+                {/* Hotspots Rendered Inside SVG for perfect positioning */}
+                {testimonials.map((t) => (
+                  <g
+                    key={t.id}
+                    onClick={() => {
+                      setActiveId(t.id);
+                      setIsAutoPlaying(false);
+                    }}
+                    onMouseEnter={() => {
+                      setActiveId(t.id);
+                      setIsAutoPlaying(false);
+                    }}
+                    className="group/pin"
+                    style={{ transformOrigin: `${t.cx}px ${t.cy}px` }}
+                  >
+                    {/* Pulse Effect */}
+                    <circle
+                      cx={t.cx} cy={t.cy} r="10"
+                      className={`animate-ping opacity-75 ${activeId === t.id ? "fill-[#FF9600]" : "fill-[#0F4C75]"}`}
+                      style={{
+                        transformOrigin: `${t.cx}px ${t.cy}px`,
+                        display: activeId === t.id ? 'block' : 'none',
+                      }}
+                    />
+
+                    {/* Main Dot */}
+                    <circle
+                      cx={t.cx} cy={t.cy} r="6"
+                      stroke="white" strokeWidth="2"
+                      className={`transition-colors duration-300 ${activeId === t.id ? "fill-[#FF9600]" : "fill-[#0F4C75] group-hover/pin:fill-[#FF9600]"
+                        }`}
+                    />
+
+                  </g>
+                ))}
+              </svg>
             </div>
           </div>
 
-          {/* Desktop Featured Image (Absolute Left) */}
-          <div className="absolute left-0 top-0 bottom-0 w-[400px] lg:w-[450px] z-0 hidden md:block">
-            <div className="relative h-full w-full rounded-3xl overflow-hidden shadow-xl">
-              <Image
-                src="/images/testimonials.png"
-                alt="Testimonial Cover"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F4C75] via-[#0F4C75]/60 to-transparent opacity-90" />
-
-              <div className="absolute bottom-0 left-0 p-10 w-full z-10">
-                <div className="mb-6">
-                  <Image src="/icons/ooui_quotes-ltr.svg" alt="Quote" width={56} height={56} />
-                </div>
-                <h3 className="text-white text-3xl font-bold leading-snug">
-                  Sekarang ngurus usaha jadi lebih jelas arahnya
-                </h3>
-              </div>
-            </div>
-          </div>
-
-          {/* Carousel Scroll Container - Centered Items */}
-          <div
-            ref={scrollRef}
-            className="flex flex-nowrap gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide w-full md:w-screen md:ml-[calc(50%-50vw)] relative z-10 h-[450px] items-center"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {/* Spacer for Desktop Layout - Fixed Width */}
-            <div className="hidden md:block shrink-0 w-[450px] lg:w-[480px] snap-start" />
-
-            {voices.map((voice) => (
-              <motion.div
-                key={voice.id}
-                className="snap-start shrink-0 w-[300px] md:w-[320px] lg:w-[350px]"
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="h-full bg-white rounded-xl p-8 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-xl transition-all duration-300 group min-h-[300px]">
-                  <div>
-                    <div className="flex items-center gap-2 text-[#0F4C75] font-normal text-lg mb-6 group-hover:text-[#FF9600] transition-colors">
-                      <Smile className="w-5 h-5" />
-                      <span>Suara dari Mitra</span>
-                    </div>
-                    <p className="text-gray-500 text-base leading-relaxed">
-                      "{voice.quote}"
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-3 pt-6 border-t border-gray-100 mt-6">
-                    <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden shrink-0 border border-gray-200">
-                      {/* Avatar Placeholder */}
-                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-500 font-bold">
-                        {voice.name.charAt(0)}
+          {/* Testimonial Card Display - Positioned Near Hotspot */}
+          <div className="relative w-full md:absolute md:inset-0 pointer-events-none z-30 px-4 py-8 md:py-0">
+            <AnimatePresence mode="wait">
+              {activeTestimonial && (
+                <motion.div
+                  key={activeTestimonial.id}
+                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  className="hidden md:block absolute bg-white/95 backdrop-blur-md border border-gray-100/50 p-5 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] max-w-xs w-full pointer-events-auto"
+                  style={{
+                    // Position card near the hotspot
+                    // For far-right hotspots (>600), anchor to right edge; otherwise use left positioning
+                    ...(activeTestimonial.cx > 600
+                      ? { right: '5%', left: 'auto' }
+                      : { left: `${Math.min((activeTestimonial.cx / 787) * 100, 70)}%` }
+                    ),
+                    top: `${(activeTestimonial.cy / 316) * 100}%`,
+                    // Flip to left side if hotspot is on the right half
+                    transform: activeTestimonial.cx > 400 ? 'translate(0, -50%)' : 'translate(20px, -50%)',
+                  }}
+                >
+                  <div className="flex flex-col gap-3 items-start relative z-10">
+                    {/* Header: Avatar + Info */}
+                    <div className="flex items-center gap-3 w-full border-b border-gray-100 pb-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0F4C75] to-[#0A3859] p-0.5 shadow-md shrink-0">
+                        <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
+                          <span className="text-sm font-bold text-[#0F4C75]">{activeTestimonial.name.charAt(0)}</span>
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-[#0F4C75] text-sm leading-tight truncate">{activeTestimonial.name}</h4>
+                        <p className="text-[10px] font-medium text-gray-400 truncate">{activeTestimonial.role}</p>
+                      </div>
+                      <div className="flex items-center gap-1 bg-orange-50 px-2 py-0.5 rounded-full shrink-0">
+                        <MapPin className="w-2.5 h-2.5 text-[#FF9600]" />
+                        <span className="text-[10px] font-bold text-[#FF9600] uppercase">{activeTestimonial.location}</span>
                       </div>
                     </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#0D0E25]">
-                        {voice.name}
-                      </h4>
-                      <p className="text-xs font-light text-gray-500">
-                        {voice.role}
+
+                    {/* Content */}
+                    <div className="text-left w-full">
+                      <p className="text-sm font-medium text-gray-700 leading-relaxed italic">
+                        "{activeTestimonial.quote}"
                       </p>
                     </div>
                   </div>
+
+                  {/* Progress Indicator - only shows if auto playing (which is now off by default, but kept logic if needed) 
+                  <div className="absolute bottom-0 left-0 w-full h-1.5 bg-gray-100 mt-6 md:mt-0">
+                    <motion.div 
+                        initial={{ width: "0%" }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 5, ease: "linear", repeat: 0 }}
+                        key={activeTestimonial.id} // Re-run on id change
+                        className="h-full bg-[#0F4C75]"
+                    />
+                  </div>
+                  */}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Mobile Fallback Card (Below Map) */}
+            {activeTestimonial && (
+              <div className="md:hidden mt-4 bg-white/95 backdrop-blur-md border border-gray-100/50 p-5 rounded-2xl shadow-lg pointer-events-auto">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0F4C75] to-[#0A3859] p-0.5 shadow-md shrink-0">
+                      <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                        <span className="text-sm font-bold text-[#0F4C75]">{activeTestimonial.name.charAt(0)}</span>
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-[#0F4C75] text-sm truncate">{activeTestimonial.name}</h4>
+                      <p className="text-xs text-gray-400 truncate">{activeTestimonial.role}</p>
+                    </div>
+                    <div className="flex items-center gap-1 bg-orange-50 px-2 py-0.5 rounded-full">
+                      <MapPin className="w-2.5 h-2.5 text-[#FF9600]" />
+                      <span className="text-[10px] font-bold text-[#FF9600] uppercase">{activeTestimonial.location}</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-700 italic">"{activeTestimonial.quote}"</p>
                 </div>
-              </motion.div>
-            ))}
-
-            {/* Extra spacer at the end for smooth scrolling */}
-            <div className="w-4 shrink-0" />
-          </div>
-        </div>
-
-        {/* Controls: Dots & Mobile Buttons */}
-        <div className="mt-8 flex items-center justify-between md:justify-center md:pl-[450px]">
-          {/* Mobile Prev */}
-          <button
-            onClick={() => scroll("right")} // Reversed
-            className="md:hidden w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-[#0F4C75] shadow-sm active:scale-95 transition-transform"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-
-          {/* Dots */}
-          <div className="flex gap-2">
-            {voices.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => goTo(idx)}
-                className={cn(
-                  "transition-all duration-300 rounded-full",
-                  current === idx
-                    ? "w-8 h-2 bg-[#FF9600]"
-                    : "w-2 h-2 bg-gray-300 hover:bg-gray-400",
-                )}
-              />
-            ))}
+              </div>
+            )}
           </div>
 
-          {/* Mobile Next */}
-          <button
-            onClick={() => scroll("left")} // Reversed
-            className="md:hidden w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-[#0F4C75] shadow-sm active:scale-95 transition-transform"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
         </div>
       </div>
     </section>

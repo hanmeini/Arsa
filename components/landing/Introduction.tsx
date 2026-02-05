@@ -18,7 +18,7 @@ const faqItems = [
       "Anda cukup memasukkan kebutuhan usaha, lalu ARSA akan memproses dan menyiapkan solusi yang dapat langsung digunakan.",
   },
   {
-    question: "Bagaimana cara mendaftar?", 
+    question: "Bagaimana cara mendaftar?",
     answer:
       "Proses pendaftaran sangat mudah, cukup dengan email dan Anda bisa langsung mencoba fitur gratis kami.",
   },
@@ -26,6 +26,24 @@ const faqItems = [
 
 export function Introduction() {
   const [activeIndex, setActiveIndex] = useState<number | null>(1); // Default active index based on image
+
+  // Mascot Interaction State
+  const [isMascotHovered, setIsMascotHovered] = useState(false);
+  const [mascotMessage, setMascotMessage] = useState("Hai, aku Nara! 👋");
+
+  const mascotMessages = [
+    "Hai, aku Nara! 👋",
+    "Ada yang bisa dibantu? 🤔",
+    "Yuk, majukan usahamu! 🚀",
+    "Aku siap bantuin kamu! 💡",
+  ];
+
+  const handleMascotHover = () => {
+    // Pick random message
+    const randomIndex = Math.floor(Math.random() * mascotMessages.length);
+    setMascotMessage(mascotMessages[randomIndex]);
+    setIsMascotHovered(true);
+  };
 
   return (
     <section className="py-20 bg-white">
@@ -46,7 +64,6 @@ export function Introduction() {
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0A70AB] to-[#FE8B1D] font-bold">
                   Arsa
                 </span>
-                <span className="absolute -bottom-1 left-0 w-full h-[4px] bg-gradient-to-r from-[#0A70AB] to-[#FE8B1D] rounded-full"></span>
               </span>
               <br />
               lebih dekat
@@ -57,21 +74,14 @@ export function Introduction() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Column: Mascot */}
           <div className="relative flex justify-center md:justify-start">
-            {/* Speech Bubble */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="absolute top-10 right-10 md:right-20 bg-white px-4 py-2 rounded-full shadow-lg border border-gray-100 z-10 flex items-center gap-2"
-            >
-              <span className="text-sm font-medium text-gray-700">
-                Siap bantu kamu
-              </span>
-              <span className="text-sm">👋</span>
-            </motion.div>
+
 
             {/* Mascot Image Placeholder - Replacing with what we have or placeholder */}
-            <div className="relative w-[300px] h-[400px]">
+            <div
+              className="relative w-[300px] h-[400px] cursor-help group"
+              onMouseEnter={handleMascotHover}
+              onMouseLeave={() => setIsMascotHovered(false)}
+            >
               <video
                 src="/animations/mascot-arsa.mp4"
                 autoPlay
@@ -80,6 +90,35 @@ export function Introduction() {
                 playsInline
                 className="w-full h-full object-contain"
               />
+
+              {/* Dynamic Animated Speech Bubble */}
+              <AnimatePresence mode="wait">
+                {isMascotHovered && (
+                  <motion.div
+                    key={mascotMessage} // Re-animate when text changes
+                    initial={{ opacity: 0, scale: 0.5, y: 10, rotate: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0.5, y: 10, rotate: -10 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="absolute top-10 -right-4 z-20 origin-bottom-left filter drop-shadow-xl"
+                  >
+                    <div className="relative bg-white px-5 py-3 rounded-2xl border border-gray-100/50">
+                      <p className="text-[#0F4C75] font-bold text-sm whitespace-nowrap flex items-center gap-2">
+                        {mascotMessage}
+                      </p>
+
+                      {/* Smooth SVG Tail */}
+                      <svg
+                        className="absolute -bottom-[13px] left-0 w-6 h-6 text-white transform rotate-6 translate-x-2"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M0 0C0 0 4 14 16 20C12 10 20 0 20 0H0Z" />
+                      </svg>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
@@ -101,7 +140,7 @@ export function Introduction() {
                 <div className="px-6 py-5 flex justify-between items-center">
                   <h3
                     className={cn(
-                      "font-bold text-lg",
+                      "font-sans font-bold text-lg",
                       activeIndex === index ? "text-white" : "text-[#0F4C75]"
                     )}
                   >
@@ -134,7 +173,7 @@ export function Introduction() {
                     >
                       <div className="px-6 pb-6 pt-0">
                         <div className="h-px w-full bg-white/20 mb-4"></div>
-                        <p className="text-white/90 leading-relaxed font-medium">
+                        <p className="font-sans text-white/90 leading-relaxed font-medium">
                           {item.answer}
                         </p>
                       </div>

@@ -24,10 +24,10 @@ const MinimalInput = ({
   prefix?: string;
 }) => (
   <div className="space-y-4 group">
-    <label className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase group-focus-within:text-black transition-colors">
+    <label className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase group-focus-within:text-[#363B43] transition-colors">
       {label}
     </label>
-    <div className="relative flex items-center pb-2 border-b border-gray-200 group-focus-within:border-black transition-colors duration-500">
+    <div className="relative flex items-center pb-2 border-b border-gray-200 group-focus-within:border-[#363B43] transition-colors duration-500">
       {prefix && (
         <span className="text-gray-400 font-serif mr-3 text-lg select-none">
           {prefix}
@@ -106,7 +106,7 @@ export default function SocialProfilePage() {
                   <source src="/animations/mascot-arsa.mp4" type="video/mp4" />
                 </video>
               </div>
-              <h1 className="text-4xl md:text-6xl font-sans font-bold leading-[1.1] tracking-tight text-black mb-8">
+              <h1 className="text-4xl md:text-6xl font-sans font-bold leading-[1.1] tracking-tight text-[#363B43] mb-8">
                 Lengkapi Profil <br />
                 Digital Anda.
               </h1>
